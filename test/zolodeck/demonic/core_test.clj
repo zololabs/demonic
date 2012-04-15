@@ -1,0 +1,55 @@
+(ns zolodeck.demonic.core-test
+  (:use [clojure.test :only [run-tests deftest is are testing]]
+        [zolodeck.demonic.core :only [init-db in-demarcation run-query delete] :as demonic]
+        [zolodeck.demonic.helper :only [DATOMIC-TEST]]
+        [zolodeck.demonic.test-schema]))
+
+(init-db "datomic:mem://demonic-test" TEST-SCHEMA-TX)
+
+(defn find-by-fb-id [fb-id]
+  (when fb-id
+    (let [entity (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
+                                        fb-id)
+                     ffirst
+                     demonic/load-entity)]
+      (when (:db/id entity)
+        entity))))
+
+(defn cleanup-siva []
+  (testing "cleanup of database"
+    (demonic/in-demarcation
+     (if-let [e-id (:db/id (find-by-fb-id (:id SIVA-FB)))]
+       (demonic/delete e-id))
+     (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
+
+(deftest test-datomic-test-infra
+  (testing "nothing exists to start"
+    (demonic/in-demarcation   
+     (is (nil? (:db/id (find-by-fb-id "10000"))))))
+
+  (testing "within a test, you can CRUD correctly"
+    (binding [DATOMIC-TEST true]
+      (demonic/in-demarcation   
+       (is (nil? (:db/id (find-by-fb-id "10000"))))
+       (demonic/insert (assoc SIVA-DB :user/fb-id "10000"))
+       (is (not (nil? (:db/id (find-by-fb-id "10000"))))))))
+
+  (testing "after a test, DB is restored"
+    (demonic/in-demarcation
+     (is (nil? (:db/id (find-by-fb-id "10000")))))))
+
+
+(deftest test-new-user-persistence
+  (cleanup-siva)
+  
+  (testing "regular demarcations do persist at the end"
+    (demonic/in-demarcation   
+     (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))
+     (demonic/insert SIVA-DB)
+     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
+
+  (testing "regular demarcations are permanent"
+    (demonic/in-demarcation   
+     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
+
+  (cleanup-siva))
