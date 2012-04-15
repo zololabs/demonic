@@ -3,15 +3,15 @@
         [zolodeck.demonic.core :only [in-demarcation]]
         [zolodeck.demonic.helper :only [DATOMIC-TEST]]))
 
-(defmacro with-datomic-demarcation [in-test? body]
+(defmacro with-demonic-demarcation [in-test? body]
   `(binding [DATOMIC-TEST ~in-test?]
-     (in-datomic-demarcation ~@body)))
+     (in-demarcation ~@body)))
 
 (defmacro zolotest [test-name & body]
   `(deftest ~test-name
-     (with-datomic-demarcation true ~body)))
+     (with-demonic-demarcation true ~body)))
 
 (defmacro zolo-testing [message & body]
   `(testing ~message
-     (with-datomic-demarcation true ~body)))
+     (with-demonic-demarcation true ~body)))
 
