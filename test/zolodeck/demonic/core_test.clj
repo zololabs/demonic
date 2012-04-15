@@ -6,15 +6,6 @@
 
 (init-db "datomic:mem://demonic-test" TEST-SCHEMA-TX)
 
-(defn find-by-fb-id [fb-id]
-  (when fb-id
-    (let [entity (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
-                                        fb-id)
-                     ffirst
-                     demonic/load-entity)]
-      (when (:db/id entity)
-        entity))))
-
 (defn cleanup-siva []
   (testing "cleanup of database"
     (demonic/in-demarcation

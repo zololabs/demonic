@@ -1,5 +1,6 @@
 (ns zolodeck.demonic.test-schema
-  (:use [zolodeck.demonic.schema]))
+  (:use [zolodeck.demonic.schema]
+        [zolodeck.demonic.core :only [load-entity] :as demonic]))
 
 (def SIVA-FB {:gender "male",
               :last_name "Jagadeesan",
@@ -31,3 +32,12 @@
                 (string-fact-schema :user/fb-email false "A user's Facebook email") 
                 (string-fact-schema :user/fb-link false "A user's Facebook link") 
                 (string-fact-schema :user/fb-username false "A user's Facebook username")])
+
+(defn find-by-fb-id [fb-id]
+  (when fb-id
+    (let [entity (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
+                                        fb-id)
+                     ffirst
+                     demonic/load-entity)]
+      (when (:db/id entity)
+        entity))))
