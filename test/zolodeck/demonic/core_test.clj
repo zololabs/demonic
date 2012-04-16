@@ -2,7 +2,8 @@
   (:use [clojure.test :only [run-tests deftest is are testing]]
         [zolodeck.demonic.core :only [init-db in-demarcation run-query delete] :as demonic]
         [zolodeck.demonic.helper :only [DATOMIC-TEST]]
-        [zolodeck.demonic.test-schema]))
+        [zolodeck.demonic.test-schema]
+        [zolodeck.demonic.test]))
 
 (init-db "datomic:mem://demonic-test" TEST-SCHEMA-TX)
 
@@ -44,3 +45,23 @@
      (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
 
   (cleanup-siva))
+
+(zolotest zolotest-without-assertions
+  (cleanup-siva)
+  (demonic/insert SIVA-DB)
+  (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))
+
+(deftest test-zolotest
+  (testing "zolotests should not affect the db"
+    (zolotest-without-assertions)
+    (demonic/in-demarcation   
+     (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
+
+(deftest test-zolotesting
+  (testing "zolotesting should not affect the db"
+    (zolo-testing "inserting siva, to later check that it wasnt really inserted"
+      (demonic/insert SIVA-DB)
+      (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))
+    (demonic/in-demarcation   
+      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
+
