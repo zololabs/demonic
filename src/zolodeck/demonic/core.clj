@@ -5,7 +5,7 @@
 (defmacro in-demarcation [& body]
   `(run-in-demarcation (fn [] ~@body)))
 
-(defn wrap-datomic-demarcation [handler]
+(defn wrap-demarcation [handler]
   (fn [request]
     (if-not DATOMIC-TEST
       (in-demarcation (handler request))
