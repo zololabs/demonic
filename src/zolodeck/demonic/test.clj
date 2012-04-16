@@ -7,11 +7,11 @@
   `(binding [DATOMIC-TEST ~in-test?]
      (in-demarcation ~@body)))
 
-(defmacro zolotest [test-name & body]
+(defmacro demonictest [test-name & body]
   `(deftest ~test-name
      (with-demonic-demarcation true ~body)))
 
-(defmacro zolo-testing [message & body]
+(defmacro demonic-testing [message & body]
   `(testing ~message
      (with-demonic-demarcation true ~body)))
 

@@ -46,20 +46,22 @@
 
   (cleanup-siva))
 
-(zolotest zolotest-without-assertions
+(demonictest demonictest-without-assertions
   (cleanup-siva)
   (demonic/insert SIVA-DB)
   (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))
 
-(deftest test-zolotest
-  (testing "zolotests should not affect the db"
-    (zolotest-without-assertions)
+(deftest test-demonictest
+  (testing "demonictests should not affect the db"
+    (demonictest-without-assertions)
     (demonic/in-demarcation   
      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
 
-(deftest test-zolotesting
-  (testing "zolotesting should not affect the db"
-    (zolo-testing "inserting siva, to later check that it wasnt really inserted"
+(deftest test-demonictesting
+  (testing "demonictesting should not affect the db"
+    (demonic/in-demarcation   
+      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))
+    (demonic-testing "inserting siva, to later check that it wasnt really inserted"
       (demonic/insert SIVA-DB)
       (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))
     (demonic/in-demarcation   
