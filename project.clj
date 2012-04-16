@@ -16,5 +16,9 @@
   :min-lein-version "1.7.0"
 
   :warn-on-reflection false
+
+  :test-selectors {:default (fn [t] (not (:integration t)))
+                   :integration :integration
+                   :all (fn [t] true)}
   
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"})
