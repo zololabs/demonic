@@ -20,12 +20,22 @@
 (defn load-entity [eid]
   (db/entity @DATOMIC-DB eid))
 
+(defn load-and-transform-with [eid transform]
+  (let [e (load-entity eid)]
+    (if (:db/id e)
+      (transform e))))
+
 (defn insert [a-map]
   (-> {:db/id #db/id[:db.part/user]}
       (merge a-map)
       vector
       run-transaction)
   a-map)
+
+(defn insert-and-transform-with [a-map transform]
+  (-> a-map
+      insert
+      transform))
 
 (defn delete [entity-id]
   (-> [:db.fn/retractEntity entity-id]
