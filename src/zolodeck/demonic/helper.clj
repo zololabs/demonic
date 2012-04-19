@@ -1,6 +1,6 @@
 (ns zolodeck.demonic.helper
   (:use [datomic.api :only [q db] :as db]
-        [zolodeck.demonic.utils :only [defrunonce]]))
+        [zolodeck.demonic.utils.clojure :only [defrunonce]]))
 
 (def CONN)
 (def ^:dynamic TX-DATA)

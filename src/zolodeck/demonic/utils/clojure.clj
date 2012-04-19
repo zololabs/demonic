@@ -1,4 +1,4 @@
-(ns zolodeck.demonic.utils)
+(ns zolodeck.demonic.utils.clojure)
 
 (defn create-runonce [function] 
   (let [sentinel (Object.)
