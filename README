@@ -31,4 +31,5 @@ As you can see, there are several CRUD operations provided by demonic, and in or
 By the way, there’s another helper function for when you’re building web-apps using Compojure:
 
 * demonic/wrap-demarcation – sets up a demonic demarcation for the web-request
+
 So these are a few things I’ve got in there right now. I’m also working on making it easy to create and maintain datomic schemas. I’ll write about that another time, once it is a bit more baked.
