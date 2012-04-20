@@ -2,24 +2,24 @@ I’ve been writing some code to work with Datomic, and thought some of this mig
 
 The first is that of a demarcation. A demarcation is kind of a dynamic binding, within which, all datomic transactions are held until the end. When the scope exits, all the datomic transactions are committed at once. This is useful in a scenario where you’re updating multiple entities in a single request (say), and you want them all to happen or you want them all to roll-back. Here’s how you’d use it:
 
-(demonic/in-demarcation
- (some-datomic-operation)
- (another-datomic-operation))
+    (demonic/in-demarcation
+      (some-datomic-operation)
+      (another-datomic-operation))
 
 The good thing is that this makes it easy to write cleaner tests. There are two macros that help, namely demonictest and demonic-testing, which are respectively like deftest and testing. You could use them like this:
 
-(demonictest test-demonictest
-  (is (nil? (:db/id (find-by-id some-id))))
-  (demonic/insert some-map)
-  (is (not (nil? (:db/id (find-by-id some-id))))))
+    (demonictest test-demonictest
+      (is (nil? (:db/id (find-by-id some-id))))
+      (demonic/insert some-map)
+      (is (not (nil? (:db/id (find-by-id some-id))))))
 
 or:
 
-(deftest test-demonic-testing
-  (demonic-testing "check not present, insert, then check present" 
-    (is (nil? (:db/id (find-by-id some-id))))
-    (demonic/insert some-map)
-    (is (not (nil? (:db/id (find-by-id some-id)))))))
+    (deftest test-demonic-testing
+      (demonic-testing "check not present, insert, then check present" 
+        (is (nil? (:db/id (find-by-id some-id))))
+        (demonic/insert some-map)
+        (is (not (nil? (:db/id (find-by-id some-id)))))))
 
 As you can see, there are several CRUD operations provided by demonic, and in order to get the above benefits (of demarcations and testability), you need to only go through these functions (and not directly call the datomic functions). Here are these basic functions:
 
