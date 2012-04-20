@@ -23,13 +23,13 @@ or:
 
 As you can see, there are several CRUD operations provided by demonic, and in order to get the above benefits (of demarcations and testability), you need to only go through these functions (and not directly call the datomic functions). Here are these basic functions:
 
-* demonic/insert – accepts a map, if it doesn’t contain a :db/id key, an insertion occurs, else an update will occur
-* demonic/load-entity – accepts a datomic entity id, and loads the associated entity
-* demonic/delete – accepts a datomic entity id, and deletes the associated entity (and all references to it)
-* demonic/run-query – accepts a datomic query, and any other data-sources, and executes it against the current snapshot of the db (within the demarcation)
+* _demonic/insert_ – accepts a map, if it doesn’t contain a :db/id key, an insertion occurs, else an update will occur
+* _demonic/load-entity_ – accepts a datomic entity id, and loads the associated entity
+* _demonic/delete_ – accepts a datomic entity id, and deletes the associated entity (and all references to it)
+* _demonic/run-query_ – accepts a datomic query, and any other data-sources, and executes it against the current snapshot of the db (within the demarcation)
 
 By the way, there’s another helper function for when you’re building web-apps using Compojure:
 
-* demonic/wrap-demarcation – sets up a demonic demarcation for the web-request
+* _demonic/wrap-demarcation_ – sets up a demonic demarcation for the web-request
 
 So these are a few things I’ve got in there right now. I’m also working on making it easy to create and maintain datomic schemas. I’ll write about that another time, once it is a bit more baked.
