@@ -20,5 +20,8 @@
   :test-selectors {:default (fn [t] (not (:integration t)))
                    :integration :integration
                    :all (fn [t] true)}
+
+  :project-init (do (use 'clojure.pprint)
+                    (use 'clojure.test))
   
   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"})
