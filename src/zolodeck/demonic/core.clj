@@ -18,12 +18,13 @@
   (apply q query @DATOMIC-DB extra-inputs))
 
 (defn load-entity [eid]
-  (db/entity @DATOMIC-DB eid))
+  (let [e (db/entity @DATOMIC-DB eid)]
+    (if (:db/id e) e)))
 
 (defn load-and-transform-with [eid transform]
-  (let [e (load-entity eid)]
-    (if (:db/id e)
-      (transform e))))
+  (-> eid
+      load-entity
+      transform))
 
 (defn insert [a-map]
   (-> {:db/id #db/id[:db.part/user]}
