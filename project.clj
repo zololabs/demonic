@@ -2,7 +2,9 @@
   :description "Datomic helper for testing and batch commits"
 
   :dependencies [[org.clojure/clojure "1.4.0-beta3"]
-                 [com.datomic/datomic "0.1.2753"]]
+                 [com.datomic/datomic "0.1.2753"]
+
+                 [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
 
   :plugins [[lein-swank "1.4.4"]
             [lein-pprint "1.1.1"]
