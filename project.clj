@@ -1,8 +1,8 @@
 (defproject zolodeck/demonic "0.1.0-SNAPSHOT"
   :description "Datomic helper for testing and batch commits"
 
-  :dependencies [[org.clojure/clojure "1.4.0-beta3"]
-                 [com.datomic/datomic "0.1.2753"]
+  :dependencies [[org.clojure/clojure "1.4.0"]
+                 [com.datomic/datomic "0.1.3007"]
 
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
 

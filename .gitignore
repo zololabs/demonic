@@ -21,8 +21,5 @@ log/*
 all.js
 furtive.iml
 .idea
-
-api/lib/*
-/api/.lein-failures
-/api/pom.xml
-/api/config/zolo.clj
+*.jar
+pom.xml
