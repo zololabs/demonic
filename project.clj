@@ -1,4 +1,4 @@
-(defproject demonic "0.1.0-SNAPSHOT"
+(defproject zolodeck/demonic "0.1.0-SNAPSHOT"
   :description "Datomic helper for testing and batch commits"
 
   :dependencies [[org.clojure/clojure "1.4.0-beta3"]
@@ -8,7 +8,8 @@
 
   :plugins [[lein-swank "1.4.4"]
             [lein-pprint "1.1.1"]
-            [lein-difftest "1.3.8"]]
+            [lein-difftest "1.3.8"]
+            [lein-notes "0.0.1"]]
 
   :hooks [leiningen.hooks.difftest]
 
