@@ -2,7 +2,7 @@
   :description "Datomic helper for testing and batch commits"
 
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [com.datomic/datomic "0.1.3007"]
+                 [com.datomic/datomic "0.1.3065"]
 
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
 
@@ -27,4 +27,4 @@
   :project-init (do (use 'clojure.pprint)
                     (use 'clojure.test))
   
-  :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"})
+  :repositories {"local" ~(str (.toURI (java.io.File. "./mvn_repo")))})

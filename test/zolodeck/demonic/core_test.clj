@@ -14,6 +14,27 @@
        (demonic/delete e-id))
      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
 
+(demonictest demonictest-without-assertions
+  (cleanup-siva)
+  (demonic/insert SIVA-DB)
+  (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))
+
+(deftest test-demonictest
+  (testing "demonictests should not affect the db"
+    (demonictest-without-assertions)
+    (demonic/in-demarcation   
+     (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
+
+(deftest test-demonictesting
+  (testing "demonictesting should not affect the db"
+    (demonic/in-demarcation   
+      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))
+    (demonic-testing "inserting siva, to later check that it wasnt really inserted"
+      (demonic/insert SIVA-DB)
+      (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))
+    (demonic/in-demarcation   
+      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
+
 (deftest test-datomic-test-infra
   (testing "nothing exists to start"
     (demonic/in-demarcation   
@@ -46,24 +67,11 @@
 
   (cleanup-siva))
 
-(demonictest demonictest-without-assertions
-  (cleanup-siva)
-  (demonic/insert SIVA-DB)
-  (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))
 
-(deftest test-demonictest
-  (testing "demonictests should not affect the db"
-    (demonictest-without-assertions)
-    (demonic/in-demarcation   
-     (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
-
-(deftest test-demonictesting
-  (testing "demonictesting should not affect the db"
-    (demonic/in-demarcation   
-      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))
-    (demonic-testing "inserting siva, to later check that it wasnt really inserted"
-      (demonic/insert SIVA-DB)
-      (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))
-    (demonic/in-demarcation   
-      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
-
+;; (deftest test-has-many-friends-persistence
+;;   (cleanup-siva)
+;;   (testing "can persist siva and his friends"
+;;     (demonic/in-demarcation
+;;      (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])]
+;;        (demonic/insert siva-graph))
+;;      (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))
