@@ -23,21 +23,11 @@
               :user/last-name "Jagadeesan",
               :user/gender "male"})
 
-(def AMIT-DB {:user/fb-id "1014524784",
-              :user/first-name "Amit",
-              :user/fb-email "amitrathore@gmail.com",
-              :user/fb-username "amitrathore",
-              :user/fb-link "http://www.facebook.com/amitrathore",
-              :user/last-name "Rathore",
-              :user/gender "male"})
+(def AMIT-DB {:user/first-name "Amit"
+              :user/last-name "Rathore"})
 
-(def DEEPTHI-DB {:user/fb-id "1014524785",
-                 :user/first-name "Deepthi",
-                 :user/fb-email "deepthirathore@gmail.com",
-                 :user/fb-username "deepthirathore",
-                 :user/fb-link "http://www.facebook.com/deepthirathore",
-                 :user/last-name "Rathore",
-                 :user/gender "female"})
+(def HARINI-DB {:user/first-name "Harini"
+                :user/last-name "Nambiraghavan"})
 
 (def TEST-SCHEMA-TX [
                 (string-fact-schema :user/first-name true "A user's first name") 
@@ -48,11 +38,13 @@
                 (string-fact-schema :user/fb-email false "A user's Facebook email") 
                 (string-fact-schema :user/fb-link false "A user's Facebook link") 
                 (string-fact-schema :user/fb-username false "A user's Facebook username")
-
+                
                 (string-fact-schema :friend/first-name true "Friend's first name")
                 (string-fact-schema :friend/last-name true "Friend's first name")
 
-                (refs-fact-schema :user/friends true "A users's friends")
+                (ref-fact-schema :user/wife false "A user's wife")
+
+                (refs-fact-schema :user/friends false "A users's friends")
 ])
 
 (defn find-by-fb-id [fb-id]

@@ -68,10 +68,10 @@
   (cleanup-siva))
 
 
-;; (deftest test-has-many-friends-persistence
-;;   (cleanup-siva)
-;;   (testing "can persist siva and his friends"
-;;     (demonic/in-demarcation
-;;      (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])]
-;;        (demonic/insert siva-graph))
-;;      (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))
+(deftest test-has-many-friends-persistence
+  (cleanup-siva)
+  (testing "can persist siva and his friends"
+    (demonic/in-demarcation
+     (let [siva-graph (assoc SIVA-DB :user/wife HARINI-DB)]
+       (demonic/insert siva-graph))
+     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))

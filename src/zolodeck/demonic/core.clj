@@ -1,6 +1,7 @@
 (ns zolodeck.demonic.core
   (:use [datomic.api :only [q db] :as db]
-        zolodeck.demonic.helper))
+        zolodeck.demonic.helper
+        zolodeck.utils.debug))
 
 (defmacro in-demarcation [& body]
   `(run-in-demarcation (fn [] ~@body)))
@@ -27,9 +28,8 @@
       transform))
 
 (defn insert [a-map]
-  (-> {:db/id #db/id[:db.part/user]}
-      (merge a-map)
-      vector
+  (-> (object-with-db-id a-map)
+      (process-ref-attributes)
       run-transaction)
   a-map)
 

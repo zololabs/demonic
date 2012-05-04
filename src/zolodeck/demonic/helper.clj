@@ -1,6 +1,9 @@
 (ns zolodeck.demonic.helper
-  (:use [datomic.api :only [q db] :as db]
-        [zolodeck.utils.clojure :only [defrunonce]]))
+  (:use [datomic.api :only [q db tempid] :as db]
+        [zolodeck.utils.clojure :only [defrunonce]]
+        [zolodeck.utils.maps :only [select-keys-if] :as maps]
+        [zolodeck.utils.debug]
+        [zolodeck.demonic.schema :as schema]))
 
 (def CONN)
 (def ^:dynamic TX-DATA)
@@ -17,6 +20,9 @@
   (db/create-database datomic-db-name)
   (def CONN (db/connect datomic-db-name))
   (setup-schema datomic-schema))
+
+(defn next-temp-id []
+  (- (System/currentTimeMillis)))
 
 (defn get-db []
   (db/db CONN))
@@ -35,3 +41,19 @@
     (let [res (thunk)]
       (commit-pending-transactions)
       res)))
+
+(defn object-with-db-id [a-map]
+  (-> {:db/id (db/tempid :db.part/user)}
+      (merge a-map)))
+
+(defn- new-object [attribute a-map]
+  (object-with-db-id a-map))
+
+(defn collect-new-objects [refs-map]
+  (maps/transform-vals-with refs-map new-object))
+
+(defn process-ref-attributes [a-map]
+  (let [refs-map (maps/select-keys-if a-map schema/is-ref?)
+        new-objects-map (collect-new-objects refs-map)]
+    (conj (apply vector (vals new-objects-map))
+          (reduce (fn [m k] (assoc m k (:db/id (new-objects-map k)))) a-map (keys refs-map)))))
