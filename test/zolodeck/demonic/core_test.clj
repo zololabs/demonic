@@ -26,6 +26,7 @@
      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
 
 (deftest test-demonictesting
+  (cleanup-siva)
   (testing "demonictesting should not affect the db"
     (demonic/in-demarcation   
       (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))
@@ -68,7 +69,7 @@
   (cleanup-siva))
 
 
-(deftest test-has-many-friends-persistence
+(deftest test-user-has-a-wife-persistence
   (cleanup-siva)
   (testing "can persist siva and his friends"
     (demonic/in-demarcation
