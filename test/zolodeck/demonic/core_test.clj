@@ -75,7 +75,8 @@
     (demonic/in-demarcation
      (let [siva-graph (assoc SIVA-DB :user/wife HARINI-DB)]
        (demonic/insert siva-graph))
-     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))
+     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))
+     (is (not (nil? (:db/id (find-by-first-name (:user/first-name HARINI-DB)))))))))
 
 (deftest test-user-has-friends-persistence
   (cleanup-siva)
@@ -83,10 +84,11 @@
     (demonic/in-demarcation
      (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])]
        (demonic/insert siva-graph))
-     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))
+     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))
+     (is (not (nil? (:db/id (find-by-first-name (:user/first-name AMIT-DB))))))
+     (is (not (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB)))))))))
 
 (deftest test-user-has-a-wife-and-friends-persistence
-  (println "Pending...")
   (cleanup-siva)
   (testing "can persist siva and his friends"
     (demonic/in-demarcation
@@ -94,4 +96,7 @@
                           (assoc :user/wife HARINI-DB)
                           (assoc :user/friends [AMIT-DB DEEPTHI-DB]))]
        (demonic/insert siva-graph))
-     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))
+     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))
+     (is (not (nil? (:db/id (find-by-first-name (:user/first-name HARINI-DB))))))
+     (is (not (nil? (:db/id (find-by-first-name (:user/first-name AMIT-DB))))))
+     (is (not (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB)))))))))

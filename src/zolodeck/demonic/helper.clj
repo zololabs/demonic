@@ -29,7 +29,6 @@
 
 (defn run-transaction [tx-data]
   (swap! TX-DATA concat tx-data)
-  (print-vals "TX-DATA:" @TX-DATA)
   (swap! DATOMIC-DB db/with tx-data))
 
 (defn commit-pending-transactions []
@@ -66,9 +65,7 @@
               (conj collected obj))) () new-objects))
 
 (defn process-ref-attributes [a-map]
-  (let [refs-map (print-vals "refs:" (maps/select-keys-if a-map schema/is-ref?))
-        new-objects-map (print-vals "new-objs:" (collect-new-objects refs-map))]
-    (print-vals "processed:"
-                (conj (-> new-objects-map vals gather-new-objects reverse)
-                      (update-obj-with-db-ids a-map refs-map new-objects-map)
-))))
+  (let [refs-map (maps/select-keys-if a-map schema/is-ref?)
+        new-objects-map (collect-new-objects refs-map)]
+    (conj (-> new-objects-map vals gather-new-objects reverse)
+          (update-obj-with-db-ids a-map refs-map new-objects-map))))

@@ -58,3 +58,11 @@
                      demonic/load-entity)]
       (when (:db/id entity)
         entity))))
+
+(defn find-by-first-name [first-name]
+  (let [entity (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/first-name ?fb]]
+                                      first-name)
+                   ffirst
+                   demonic/load-entity)]
+    (when (:db/id entity)
+      entity)))
