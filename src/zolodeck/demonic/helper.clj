@@ -47,13 +47,11 @@
   (-> {:db/id (db/tempid :db.part/user)}
       (merge a-map)))
 
-(defn- new-object [attribute value]
-  (if (sequential? value)
-    (map object-with-db-id value)
-    (object-with-db-id value)))
-
 (defn collect-new-objects [refs-map]
-  (maps/transform-vals-with refs-map new-object))
+  (maps/transform-vals-with refs-map (fn [attribute value]
+                                       (if (sequential? value)
+                                         (map object-with-db-id value)
+                                         (object-with-db-id value)))))
 
 (defn- update-obj-with-db-ids [a-map refs-map new-objects-map]
   (reduce (fn [m k] (if (map? (m k))
@@ -64,13 +62,13 @@
 (defn- gather-new-objects [new-objects]
   (reduce (fn [collected obj]
             (if (sequential? obj)
-              (apply vector (concat collected obj))
-              (conj collected obj))) [] new-objects))
+              (concat obj collected)
+              (conj collected obj))) () new-objects))
 
 (defn process-ref-attributes [a-map]
   (let [refs-map (print-vals "refs:" (maps/select-keys-if a-map schema/is-ref?))
         new-objects-map (print-vals "new-objs:" (collect-new-objects refs-map))]
     (print-vals "processed:"
-                (conj (gather-new-objects (vals new-objects-map))
+                (conj (-> new-objects-map vals gather-new-objects reverse)
                       (update-obj-with-db-ids a-map refs-map new-objects-map)
 ))))
