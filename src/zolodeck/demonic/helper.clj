@@ -55,9 +55,22 @@
 (defn collect-new-objects [refs-map]
   (maps/transform-vals-with refs-map new-object))
 
+(defn- update-obj-with-db-ids [a-map refs-map new-objects-map]
+  (reduce (fn [m k] (if (map? (m k))
+                      (assoc m k (:db/id (new-objects-map k)))
+                      (assoc m k (map :db/id (new-objects-map k)))))
+          a-map (keys refs-map)))
+
+(defn- gather-new-objects [new-objects]
+  (reduce (fn [collected obj]
+            (if (sequential? obj)
+              (apply vector (concat collected obj))
+              (conj collected obj))) [] new-objects))
+
 (defn process-ref-attributes [a-map]
   (let [refs-map (print-vals "refs:" (maps/select-keys-if a-map schema/is-ref?))
         new-objects-map (print-vals "new-objs:" (collect-new-objects refs-map))]
     (print-vals "processed:"
-                (conj (apply vector (vals new-objects-map))
-                      (reduce (fn [m k] (assoc m k (:db/id (new-objects-map k)))) a-map (keys refs-map))))))
+                (conj (gather-new-objects (vals new-objects-map))
+                      (update-obj-with-db-ids a-map refs-map new-objects-map)
+))))
