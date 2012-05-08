@@ -71,8 +71,27 @@
 
 (deftest test-user-has-a-wife-persistence
   (cleanup-siva)
-  (testing "can persist siva and his friends"
+  (testing "can persist siva and his wife"
     (demonic/in-demarcation
      (let [siva-graph (assoc SIVA-DB :user/wife HARINI-DB)]
+       (demonic/insert siva-graph))
+     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))
+
+(deftest test-user-has-friends-persistence
+  (cleanup-siva)
+  (testing "can persist siva and his friends"
+    (demonic/in-demarcation
+     (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])]
+       (demonic/insert siva-graph))
+     (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))
+
+(deftest test-user-has-a-wife-and-friends-persistence
+  (println "Pending...")
+  (cleanup-siva)
+  (testing "can persist siva and his friends"
+    (demonic/in-demarcation
+     (let [siva-graph (-> SIVA-DB 
+                          (assoc :user/wife HARINI-DB)
+                          (assoc :user/friends [AMIT-DB DEEPTHI-DB]))]
        (demonic/insert siva-graph))
      (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB)))))))))

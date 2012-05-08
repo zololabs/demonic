@@ -26,6 +26,9 @@
 (def AMIT-DB {:user/first-name "Amit"
               :user/last-name "Rathore"})
 
+(def DEEPTHI-DB {:user/first-name "Deepthi"
+                 :user/last-name "Somasunder"})
+
 (def HARINI-DB {:user/first-name "Harini"
                 :user/last-name "Nambiraghavan"})
 

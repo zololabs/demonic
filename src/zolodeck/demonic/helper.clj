@@ -29,6 +29,7 @@
 
 (defn run-transaction [tx-data]
   (swap! TX-DATA concat tx-data)
+  (print-vals "TX-DATA:" @TX-DATA)
   (swap! DATOMIC-DB db/with tx-data))
 
 (defn commit-pending-transactions []
@@ -46,14 +47,17 @@
   (-> {:db/id (db/tempid :db.part/user)}
       (merge a-map)))
 
-(defn- new-object [attribute a-map]
-  (object-with-db-id a-map))
+(defn- new-object [attribute value]
+  (if (sequential? value)
+    (map object-with-db-id value)
+    (object-with-db-id value)))
 
 (defn collect-new-objects [refs-map]
   (maps/transform-vals-with refs-map new-object))
 
 (defn process-ref-attributes [a-map]
-  (let [refs-map (maps/select-keys-if a-map schema/is-ref?)
-        new-objects-map (collect-new-objects refs-map)]
-    (conj (apply vector (vals new-objects-map))
-          (reduce (fn [m k] (assoc m k (:db/id (new-objects-map k)))) a-map (keys refs-map)))))
+  (let [refs-map (print-vals "refs:" (maps/select-keys-if a-map schema/is-ref?))
+        new-objects-map (print-vals "new-objs:" (collect-new-objects refs-map))]
+    (print-vals "processed:"
+                (conj (apply vector (vals new-objects-map))
+                      (reduce (fn [m k] (assoc m k (:db/id (new-objects-map k)))) a-map (keys refs-map))))))
