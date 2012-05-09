@@ -102,7 +102,7 @@
      (is (not (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB)))))))))
 
 (deftest test-graph-loads
-  (cleanup-siva)
+  ;(cleanup-siva)
   (testing "can load up siva's graph"
     (demonic/in-demarcation
      (demonic/insert (-> SIVA-DB 
@@ -111,4 +111,5 @@
      (let [siva (find-by-fb-id (:id SIVA-FB))]
        (println (keys siva))
        (println (:user/fb-email siva))
-       (println (:user/wife siva))))))
+       (println (:user/wife siva))
+       (println (assoc (:user/wife siva) :a 1))))))

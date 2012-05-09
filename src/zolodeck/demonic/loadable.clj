@@ -1,4 +1,5 @@
-(ns zolodeck.demonic.loadable)
+(ns zolodeck.demonic.loadable
+  (:use zolodeck.demonic.helper))
 
 (deftype Loadable [m]
   clojure.lang.IPersistentMap
@@ -10,9 +11,9 @@
   
   clojure.lang.ILookup
   (valAt [this k]
-    (@m k))
+    (get-value m k))
   (valAt [this k v]
-    (@m k v))
+    (get-value m k v))
   
   clojure.lang.Seqable
   (seq [this] (seq @m))

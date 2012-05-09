@@ -42,9 +42,13 @@
       (commit-pending-transactions)
       res)))
 
+;; creating new datomic transaction ready maps
+
 (defn object-with-db-id [a-map]
   (-> {:db/id (db/tempid :db.part/user)}
       (merge a-map)))
+
+;; handling reference attributes
 
 (defn collect-new-objects [refs-map]
   (maps/transform-vals-with refs-map (fn [attribute value]
@@ -69,3 +73,31 @@
         new-objects-map (collect-new-objects refs-map)]
     (conj (-> new-objects-map vals gather-new-objects reverse)
           (update-obj-with-db-ids a-map refs-map new-objects-map))))
+
+;; dealing with loadables
+
+(defn entity->map [e]
+  (-> {:db/id (:db/id e)}
+        (into e)))
+
+(defn is-component? [value]
+  (= datomic.query.EntityMap (class value)))
+
+(defn- load-and-return-component [m-atom attrib {db-id :db/id}]
+  (let [e (-> (db/entity @DATOMIC-DB db-id) entity->map)]
+    (println "SWAP!")
+    (swap! m-atom assoc attrib e)
+    e))
+
+(defn get-value
+  ([m-atom attrib not-found-value]
+     (println "get-value")
+     (let [v (attrib @m-atom)]
+       (if (nil? v)
+         not-found-value
+         (if (is-component? v)
+           (load-and-return-component m-atom attrib v)
+           v))))
+  ([m-atom attrib]
+     (get-value m-atom attrib nil)))
+

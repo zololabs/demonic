@@ -55,7 +55,7 @@
     (let [entity (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/fb-id ?fb]]
                                         fb-id)
                      ffirst
-                     demonic/load-entity)]
+                     demonic/load-loadable)]
       (when (:db/id entity)
         entity))))
 
@@ -63,6 +63,6 @@
   (let [entity (-> (demonic/run-query '[:find ?u :in $ ?fb :where [?u :user/first-name ?fb]]
                                       first-name)
                    ffirst
-                   demonic/load-entity)]
+                   demonic/load-loadable)]
     (when (:db/id entity)
       entity)))

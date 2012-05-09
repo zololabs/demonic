@@ -1,5 +1,6 @@
 (ns zolodeck.demonic.core
   (:use [datomic.api :only [q db] :as db]
+        zolodeck.demonic.loadable
         zolodeck.demonic.helper
         zolodeck.utils.debug))
 
@@ -21,6 +22,12 @@
 (defn load-entity [eid]
   (let [e (db/entity @DATOMIC-DB eid)]
     (if (:db/id e) e)))
+
+(defn load-loadable [eid]
+  (if-let [e (load-entity eid)]
+    (-> e
+        entity->map
+        (new-loadable))))
 
 (defn load-and-transform-with [eid transform]
   (-> eid
