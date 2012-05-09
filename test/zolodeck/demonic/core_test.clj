@@ -90,13 +90,25 @@
 
 (deftest test-user-has-a-wife-and-friends-persistence
   (cleanup-siva)
-  (testing "can persist siva and his friends"
+  (testing "can persist siva, his wife, and his friends"
     (demonic/in-demarcation
      (let [siva-graph (-> SIVA-DB 
                           (assoc :user/wife HARINI-DB)
                           (assoc :user/friends [AMIT-DB DEEPTHI-DB]))]
-       (demonic/insert siva-graph))
+       (demonic/insert siva-graph))     
      (is (not (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))
      (is (not (nil? (:db/id (find-by-first-name (:user/first-name HARINI-DB))))))
      (is (not (nil? (:db/id (find-by-first-name (:user/first-name AMIT-DB))))))
      (is (not (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB)))))))))
+
+(deftest test-graph-loads
+  (cleanup-siva)
+  (testing "can load up siva's graph"
+    (demonic/in-demarcation
+     (demonic/insert (-> SIVA-DB 
+                         (assoc :user/wife HARINI-DB)
+                         (assoc :user/friends [AMIT-DB DEEPTHI-DB])))
+     (let [siva (find-by-fb-id (:id SIVA-FB))]
+       (println (keys siva))
+       (println (:user/fb-email siva))
+       (println (:user/wife siva))))))
