@@ -84,20 +84,17 @@
   (= datomic.query.EntityMap (class value)))
 
 (defn- load-and-return-component [m-atom attrib {db-id :db/id}]
-  (let [e (-> (db/entity @DATOMIC-DB db-id) entity->map)]
-    (println "SWAP!")
+  (let [e (entity->map (db/entity @DATOMIC-DB db-id))]
     (swap! m-atom assoc attrib e)
     e))
 
 (defn get-value
   ([m-atom attrib not-found-value]
-     (println "get-value")
      (let [v (attrib @m-atom)]
-       (if (nil? v)
-         not-found-value
-         (if (is-component? v)
-           (load-and-return-component m-atom attrib v)
-           v))))
+       (cond
+        (nil? v) not-found-value
+        (is-component? v) (load-and-return-component m-atom attrib v)
+        :otherwise v)))
   ([m-atom attrib]
      (get-value m-atom attrib nil)))
 
