@@ -1,5 +1,6 @@
 (ns zolodeck.demonic.schema
-  (:use [datomic.api :only [tempid] :as db]))
+  (:use [datomic.api :only [tempid] :as db]
+        zolodeck.utils.debug))
 
 (def SCHEMA-MAP (atom {}))
 
@@ -9,7 +10,7 @@
   (let [schema {:db/id (db/tempid :db.part/db)
                 :db/ident attribute
                 :db/valueType value-type
-                :db/cardinality :db.cardinality/one
+                :db/cardinality cardinality
                 :db/fulltext fulltext?
                 :db/doc doc
                 :db.install/_attribute :db.part/db}]
@@ -18,6 +19,9 @@
 
 (defn string-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/string :db.cardinality/one fulltext? doc))
+
+(defn instant-fact-schema [attribute fulltext? doc]
+  (fact-schema attribute :db.type/instant :db.cardinality/one fulltext? doc))
 
 (defn refs-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/ref :db.cardinality/many fulltext? doc))
@@ -31,11 +35,12 @@
   (-> (get-in @SCHEMA-MAP [attribute :db/valueType])
       (= :db.type/ref)))
 
+(defn cardinality [attribute]
+  (get-in @SCHEMA-MAP [attribute :db/cardinality]))
+
 (defn is-cardinality-many? [attribute]
-  (-> (get-in @SCHEMA-MAP [attribute :db/cardinality])
-      (= :db.cardinality/many)))
+  (= (cardinality attribute) :db.cardinality/many))
 
 (defn is-cardinality-one? [attribute]
-  (-> (get-in @SCHEMA-MAP [attribute :db/cardinality])
-      (= :db.cardinality/one)))
+  (= (cardinality attribute) :db.cardinality/one))
 

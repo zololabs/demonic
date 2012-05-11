@@ -16,7 +16,8 @@
        (db/transact CONN)
        deref))
 
-(defrunonce initialize-datomic [datomic-db-name datomic-schema]
+(defn initialize-datomic [datomic-db-name datomic-schema]
+  (println "initializing datomic " datomic-schema)
   (db/create-database datomic-db-name)
   (def CONN (db/connect datomic-db-name))
   (setup-schema datomic-schema))
@@ -80,11 +81,19 @@
   (-> {:db/id (:db/id e)}
         (into e)))
 
-(defn is-component? [value]
-  (= datomic.query.EntityMap (class value)))
+(defn entity-id->map [e-id]
+  (entity->map (db/entity @DATOMIC-DB e-id)))
 
-(defn- load-and-return-component [m-atom attrib {db-id :db/id}]
-  (let [e (entity->map (db/entity @DATOMIC-DB db-id))]
+(defmulti load-ref (fn [attrib _] (schema/cardinality attrib)))
+
+(defmethod load-ref :db.cardinality/one [attrib value]
+  (entity-id->map (:db/id value)))
+
+(defmethod load-ref :db.cardinality/many [attrib values]
+  (map #(entity-id->map (:db/id %)) values))
+
+(defn load-attrib-and-update-loadable [m-atom attrib v]
+  (let [e (load-ref attrib v)]
     (swap! m-atom assoc attrib e)
     e))
 
@@ -93,7 +102,7 @@
      (let [v (attrib @m-atom)]
        (cond
         (nil? v) not-found-value
-        (is-component? v) (load-and-return-component m-atom attrib v)
+        (is-ref? attrib) (load-attrib-and-update-loadable m-atom attrib v)
         :otherwise v)))
   ([m-atom attrib]
      (get-value m-atom attrib nil)))

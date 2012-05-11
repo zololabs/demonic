@@ -1,5 +1,6 @@
 (ns zolodeck.demonic.loadable
-  (:use zolodeck.demonic.helper))
+  (:use zolodeck.demonic.helper
+        zolodeck.utils.debug))
 
 (deftype Loadable [m]
   clojure.lang.IPersistentMap

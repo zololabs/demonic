@@ -107,4 +107,7 @@
                         (assoc :user/friends [AMIT-DB DEEPTHI-DB])))
     (let [siva (find-by-fb-id (:id SIVA-FB))]
       (is (= (:user/fb-email SIVA-DB) (:user/fb-email siva)))
+      (is (= 2 (count (:user/friends siva))))
+      (is (= (set [(:user/first-name AMIT-DB) (:user/first-name DEEPTHI-DB)])
+             (set (map :user/first-name (:user/friends siva)))))
       (is (= HARINI-DB (select-keys (:user/wife siva) [:user/first-name :user/last-name]))))))
