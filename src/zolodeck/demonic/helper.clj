@@ -16,8 +16,7 @@
        (db/transact CONN)
        deref))
 
-(defn initialize-datomic [datomic-db-name datomic-schema]
-  (println "initializing datomic " datomic-schema)
+(defrunonce initialize-datomic [datomic-db-name datomic-schema]
   (db/create-database datomic-db-name)
   (def CONN (db/connect datomic-db-name))
   (setup-schema datomic-schema))
