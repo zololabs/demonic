@@ -110,4 +110,5 @@
       (is (= 2 (count (:user/friends siva))))
       (is (= (set [(:user/first-name AMIT-DB) (:user/first-name DEEPTHI-DB)])
              (set (map :user/first-name (:user/friends siva)))))
-      (is (= HARINI-DB (select-keys (:user/wife siva) [:user/first-name :user/last-name]))))))
+      (is (= HARINI-DB (select-keys (:user/wife siva) [:user/first-name :user/last-name])))
+      (is (= (:user/first-name HARINI-DB) (get-in siva [:user/wife :user/first-name]))))))
