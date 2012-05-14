@@ -80,29 +80,4 @@
   (-> {:db/id (:db/id e)}
         (into e)))
 
-(defn entity-id->map [e-id]
-  (entity->map (db/entity @DATOMIC-DB e-id)))
-
-(defmulti load-ref (fn [attrib _] (schema/cardinality attrib)))
-
-(defmethod load-ref :db.cardinality/one [attrib value]
-  (entity-id->map (:db/id value)))
-
-(defmethod load-ref :db.cardinality/many [attrib values]
-  (map #(entity-id->map (:db/id %)) values))
-
-(defn load-attrib-and-update-loadable [m-atom attrib v]
-  (let [e (load-ref attrib v)]
-    (swap! m-atom assoc attrib e)
-    e))
-
-(defn get-value
-  ([m-atom attrib not-found-value]
-     (let [v (attrib @m-atom)]
-       (cond
-        (nil? v) not-found-value
-        (is-ref? attrib) (load-attrib-and-update-loadable m-atom attrib v)
-        :otherwise v)))
-  ([m-atom attrib]
-     (get-value m-atom attrib nil)))
 
