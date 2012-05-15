@@ -73,11 +73,3 @@
         new-objects-map (collect-new-objects refs-map)]
     (conj (-> new-objects-map vals gather-new-objects reverse)
           (update-obj-with-db-ids a-map refs-map new-objects-map))))
-
-;; dealing with loadables
-
-(defn entity->map [e]
-  (-> {:db/id (:db/id e)}
-        (into e)))
-
-

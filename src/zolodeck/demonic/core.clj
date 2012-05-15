@@ -22,7 +22,7 @@
 (defn load-entity [eid]
   (let [e (db/entity @DATOMIC-DB eid)]
     (when (:db/id e)
-      (-> e entity->map new-loadable))))
+      (-> e entity->loadable))))
 
 (defn load-and-transform-with [eid transform]
   (-> eid
