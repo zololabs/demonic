@@ -20,6 +20,9 @@
 (defn string-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/string :db.cardinality/one fulltext? doc))
 
+(defn strings-fact-schema [attribute fulltext? doc]
+  (fact-schema attribute :db.type/string :db.cardinality/many fulltext? doc))
+
 (defn instant-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/instant :db.cardinality/one fulltext? doc))
 
