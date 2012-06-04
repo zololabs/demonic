@@ -47,3 +47,10 @@
 (defn is-cardinality-one? [attribute]
   (= (cardinality attribute) :db.cardinality/one))
 
+(defn is-string? [attribute]
+  (and (= :db.type/string (get-in @SCHEMA-MAP [attribute :db/valueType]))
+       (= :db.cardinality/one (get-in @SCHEMA-MAP [attribute :db/cardinality]))))
+
+(defn is-strings? [attribute]
+  (and (= :db.type/string (get-in @SCHEMA-MAP [attribute :db/valueType]))
+       (= :db.cardinality/many (get-in @SCHEMA-MAP [attribute :db/cardinality]))))
