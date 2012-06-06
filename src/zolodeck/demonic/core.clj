@@ -30,7 +30,7 @@
       transform))
 
 (defn insert [a-map]
-  (-> (object-with-db-id a-map)
+  (-> (with-demonic-attributes a-map)
       (process-ref-attributes)
       run-transaction)
   a-map)

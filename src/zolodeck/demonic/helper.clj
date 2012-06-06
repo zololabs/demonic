@@ -1,6 +1,6 @@
 (ns zolodeck.demonic.helper
   (:use [datomic.api :only [q db tempid] :as db]
-        [zolodeck.utils.clojure :only [defrunonce]]
+        [zolodeck.utils.clojure :only [defrunonce random-guid]]
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.utils.debug]
         [zolodeck.demonic.schema :as schema]))
@@ -44,8 +44,17 @@
 
 ;; creating new datomic transaction ready maps
 
-(defn object-with-db-id [a-map]
-  (-> {:db/id (db/tempid :db.part/user)}
+(defn- guid-key [a-map]
+  (-> a-map
+      keys
+      first
+      .getNamespace
+      (str "/guid")
+      keyword))
+
+(defn with-demonic-attributes [a-map]
+  (-> {:db/id (db/tempid :db.part/user)
+       (guid-key a-map) (random-guid)}
       (merge a-map)))
 
 ;; handling reference attributes
@@ -53,8 +62,8 @@
 (defn collect-new-objects [refs-map]
   (maps/transform-vals-with refs-map (fn [attribute value]
                                        (if (sequential? value)
-                                         (map object-with-db-id value)
-                                         (object-with-db-id value)))))
+                                         (map with-demonic-attributes value)
+                                         (with-demonic-attributes value)))))
 
 (defn- update-obj-with-db-ids [a-map refs-map new-objects-map]
   (reduce (fn [m k] (if (map? (m k))

@@ -33,22 +33,22 @@
                 :user/last-name "Nambiraghavan"})
 
 (def TEST-SCHEMA-TX [
-                (string-fact-schema :user/first-name true "A user's first name") 
-                (string-fact-schema :user/last-name true "A user's last name") 
-                (string-fact-schema :user/gender false "A user's gender") 
-                (string-fact-schema :user/fb-id false "A user's Facebook ID") 
-                (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token")
-                (string-fact-schema :user/fb-email false "A user's Facebook email") 
-                (string-fact-schema :user/fb-link false "A user's Facebook link") 
-                (string-fact-schema :user/fb-username false "A user's Facebook username")
-                
-                (string-fact-schema :friend/first-name true "Friend's first name")
-                (string-fact-schema :friend/last-name true "Friend's first name")
-
-                (ref-fact-schema :user/wife false "A user's wife")
-
-                (refs-fact-schema :user/friends false "A users's friends")
-])
+   (uuid-fact-schema :user/guid false "A GUID for the user")
+   (string-fact-schema :user/first-name true "A user's first name") 
+   (string-fact-schema :user/last-name true "A user's last name") 
+   (string-fact-schema :user/gender false "A user's gender") 
+   (string-fact-schema :user/fb-id false "A user's Facebook ID") 
+   (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token")
+   (string-fact-schema :user/fb-email false "A user's Facebook email") 
+   (string-fact-schema :user/fb-link false "A user's Facebook link") 
+   (string-fact-schema :user/fb-username false "A user's Facebook username")
+   
+   (string-fact-schema :friend/first-name true "Friend's first name")
+   (string-fact-schema :friend/last-name true "Friend's first name")
+   
+   (ref-fact-schema :user/wife false "A user's wife")
+   (refs-fact-schema :user/friends false "A users's friends")
+   ])
 
 (defn find-by-fb-id [fb-id]
   (when fb-id

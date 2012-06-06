@@ -26,6 +26,9 @@
 (defn instant-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/instant :db.cardinality/one fulltext? doc))
 
+(defn uuid-fact-schema [attribute fulltext? doc]
+  (fact-schema attribute :db.type/uuid :db.cardinality/one fulltext? doc))
+
 (defn refs-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/ref :db.cardinality/many fulltext? doc))
 
