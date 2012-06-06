@@ -52,10 +52,18 @@
       (str "/guid")
       keyword))
 
-(defn with-demonic-attributes [a-map]
-  (-> {:db/id (db/tempid :db.part/user)
-       (guid-key a-map) (random-guid)}
+(defn merge-guid [a-map]
+  (if a-map
+    (merge {(guid-key a-map) (random-guid)} a-map)))
+
+(defn merge-db-id [a-map]
+  (-> {:db/id (db/tempid :db.part/user)}
       (merge a-map)))
+
+(defn with-demonic-attributes [a-map]
+  (-> a-map
+      merge-guid
+      merge-db-id))
 
 ;; handling reference attributes
 
