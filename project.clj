@@ -2,7 +2,7 @@
   :description "Datomic helper for testing and batch commits"
 
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [com.datomic/datomic "0.1.3065"]
+                 [com.datomic/datomic "0.1.3164"]
 
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
 

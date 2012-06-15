@@ -1,12 +1,7 @@
 *~
 *#*
-*.jar
 lib/*
-config/insta.conf
-db/schema.rb
 classes/*
-fe/classes/*
-api/classes/*
 .clojure.conf
 .classpath
 .project
@@ -14,13 +9,9 @@ api/classes/*
 .lein-failures
 .lein-plugins
 config/config.clj
-scripts/furtive
 logs/*
 log/*
 .DS_Store
 *flymake.js
-all.js
-furtive.iml
-.idea
 
 pom.xml
