@@ -86,7 +86,7 @@
               (conj collected obj))) () new-objects))
 
 (defn process-ref-attributes [a-map]
-  (let [refs-map (maps/select-keys-if a-map schema/is-ref?)
+  (let [refs-map (maps/select-keys-if a-map (fn [k _] (schema/is-ref? k)))
         new-objects-map (collect-new-objects refs-map)]
     (conj (-> new-objects-map vals gather-new-objects reverse)
           (update-obj-with-db-ids a-map refs-map new-objects-map))))
