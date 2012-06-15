@@ -20,7 +20,7 @@
   (apply q query @DATOMIC-DB extra-inputs))
 
 (defn load-entity [eid]
-  (let [e (db/entity @DATOMIC-DB eid)]
+  (let [e (load-from-db eid)]
     (when (:db/id e)
       (-> e entity->loadable))))
 
@@ -41,6 +41,7 @@
       transform))
 
 (defn delete [entity-id]
-  (-> [:db.fn/retractEntity entity-id]
+  (-> entity-id
+      retract-entity-txn
       vector
       run-transaction))

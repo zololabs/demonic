@@ -69,6 +69,27 @@
 
   (cleanup-siva))
 
+(deftest test-user-updates
+  (cleanup-siva)
+  (demonic-testing "can persist object, then update it"
+    (print-vals "Starting test...")
+    (demonic/insert SIVA-DB)
+    (print-vals "Starting test... inserted siva.")
+    (let [siva-loaded-1 (find-by-fb-id (:id SIVA-FB))
+          _ (-> siva-loaded-1
+                (assoc :user/fb-username "siva")
+                demonic/insert)
+          siva-loaded-2 (find-by-fb-id (:id SIVA-FB))
+          _ (-> siva-loaded-2
+                (assoc :user/friends [DEEPTHI-DB])
+                demonic/insert)
+          siva-loaded-3 (find-by-fb-id (:id SIVA-FB))
+          _ (-> siva-loaded-3
+                (assoc :user/friends [DEEPTHI-DB AMIT-DB])
+                demonic/insert)
+          siva-loaded-4 (find-by-fb-id (:id SIVA-FB))]
+      (print-vals siva-loaded-3)
+      (print-vals siva-loaded-4))))
 
 (deftest test-user-has-a-wife-persistence
   (cleanup-siva)

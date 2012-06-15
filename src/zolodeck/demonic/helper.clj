@@ -3,6 +3,7 @@
         [zolodeck.utils.clojure :only [defrunonce random-guid]]
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.utils.debug]
+        [zolodeck.utils.clojure]
         [zolodeck.demonic.schema :as schema]))
 
 (def CONN)
@@ -26,6 +27,13 @@
 
 (defn get-db []
   (db/db CONN))
+
+(defn load-from-db [eid]
+  (if eid
+    (db/entity @DATOMIC-DB eid)))
+
+(defn retract-entity-txn [eid]
+  [:db.fn/retractEntity eid])
 
 (defn run-transaction [tx-data]
   (swap! TX-DATA concat tx-data)
@@ -67,26 +75,58 @@
 
 ;; handling reference attributes
 
-(defn collect-new-objects [refs-map]
-  (maps/transform-vals-with refs-map (fn [attribute value]
-                                       (if (sequential? value)
-                                         (map with-demonic-attributes value)
-                                         (with-demonic-attributes value)))))
+;; (defn collect-new-objects [refs-map]
+;;   (maps/transform-vals-with refs-map (fn [attribute value]
+;;                                        (if (sequential? value)
+;;                                          (map with-demonic-attributes value)
+;;                                          (with-demonic-attributes value)))))
 
-(defn- update-obj-with-db-ids [a-map refs-map new-objects-map]
-  (reduce (fn [m k] (if (map? (m k))
-                      (assoc m k (:db/id (new-objects-map k)))
-                      (assoc m k (map :db/id (new-objects-map k)))))
-          a-map (keys refs-map)))
+;; (defn- update-obj-with-db-ids [a-map refs-map new-objects-map]
+;;   (reduce (fn [m k] (if (map? (m k))
+;;                       (assoc m k (:db/id (new-objects-map k)))
+;;                       (assoc m k (map :db/id (new-objects-map k)))))
+;;           a-map (keys refs-map)))
 
-(defn- gather-new-objects [new-objects]
-  (reduce (fn [collected obj]
-            (if (sequential? obj)
-              (concat obj collected)
-              (conj collected obj))) () new-objects))
+;; (defn- gather-new-objects [new-objects]
+;;   (reduce (fn [collected obj]
+;;             (if (sequential? obj)
+;;               (concat obj collected)
+;;               (conj collected obj))) () new-objects))
+
+;; (defn process-ref-attributes [a-map]
+;;   (let [refs-map (maps/select-keys-if a-map (fn [k v]
+;;   (schema/is-ref? k)))
+;;         new-objects-map (collect-new-objects refs-map)]
+;;     (conj (-> new-objects-map vals gather-new-objects reverse)
+
+;;           (update-obj-with-db-ids a-map refs-map
+;;           new-objects-map))))
+
+
+(defn only-multi-refs-map [a-map]
+  (print-vals "only-multi-refs-map:" a-map)
+  (maps/select-keys-if a-map (fn [k _] (print-vals "key:" k (and (schema/is-ref? k)
+                                                                (schema/is-cardinality-many? k))))))
+
+(defn only-single-refs-map [a-map]
+  (maps/select-keys-if a-map (fn [k _] (and (schema/is-ref? k)
+                                           (schema/is-cardinality-one? k)))))
+
+(defn process-single-cardinality-refs [a-map])
+
+(defn process-multiple-cardinality-ref [old-refs txns [fresh-ref-key fresh-ref-value]]
+  (let [{added :added updated :updated deleted :deleted} (diff (old-refs fresh-ref-key) fresh-ref-value :db/id)]
+    (concat (map with-demonic-attributes added)
+            (map with-demonic-attributes updated)
+            (map retract-entity-txn deleted))))
+
+(defn process-multiple-cardinality-refs [a-map]
+  (let [old-refs (-> a-map :db/id load-from-db only-multi-refs-map)
+        fresh-refs (only-multi-refs-map a-map)]
+    (reduce #(process-multiple-cardinality-ref old-refs %1 %2) [] fresh-refs)))
 
 (defn process-ref-attributes [a-map]
-  (let [refs-map (maps/select-keys-if a-map schema/is-ref?)
-        new-objects-map (collect-new-objects refs-map)]
-    (conj (-> new-objects-map vals gather-new-objects reverse)
-          (update-obj-with-db-ids a-map refs-map new-objects-map))))
+  (let [[updated-for-multiple-refs multiple-refs-txns] (process-multiple-cardinality-refs a-map)
+        [updated-for-refs single-refs-txns] (process-single-cardinality-refs updated-for-multiple-refs)
+        all-txns (concat multiple-refs-txns single-refs-txns)]
+    (print-vals (conj all-txns updated-for-refs))))
