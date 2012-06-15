@@ -28,12 +28,15 @@
 (defn get-db []
   (db/db CONN))
 
+(defn temp-db-id? [eid]
+  (map? eid))
+
 (defn load-from-db [eid]
-  (if eid
+  (if (and eid (not (temp-db-id? eid)))
     (db/entity @DATOMIC-DB eid)))
 
-(defn retract-entity-txn [eid]
-  [:db.fn/retractEntity eid])
+(defn retract-entity-txn [entity]
+  [:db.fn/retractEntity (:db/id entity)])
 
 (defn run-transaction [tx-data]
   (swap! TX-DATA concat tx-data)
@@ -103,30 +106,59 @@
 ;;           new-objects-map))))
 
 
+(defn is-multiple-ref-attrib? [k]
+  (and (schema/is-ref? k)
+       (schema/is-cardinality-many? k)))
+
 (defn only-multi-refs-map [a-map]
-  (print-vals "only-multi-refs-map:" a-map)
-  (maps/select-keys-if a-map (fn [k _] (print-vals "key:" k (and (schema/is-ref? k)
-                                                                (schema/is-cardinality-many? k))))))
+  (maps/select-keys-if a-map (fn [k _] (is-multiple-ref-attrib? k))))
+
+(defn is-single-ref-attrib? [k]
+  (and (schema/is-ref? k)
+       (schema/is-cardinality-one? k)))
 
 (defn only-single-refs-map [a-map]
-  (maps/select-keys-if a-map (fn [k _] (and (schema/is-ref? k)
-                                           (schema/is-cardinality-one? k)))))
+  (maps/select-keys-if a-map (fn [k _] (is-single-ref-attrib? k))))
 
-(defn process-single-cardinality-refs [a-map])
+(defn annotate-single-children [a-map children-map]
+  (print-vals "Annotate Singles: a-map:" a-map)
+  (print-vals "Annotate Children: children:" children-map)
+  
+  (-> (merge a-map (maps/transform-vals-with children-map (fn [k v] (:db/id v))))
+      (maps/transform-vals-with (fn [_ v] (or (:db/id v) v)))))
+
+(defn annotate-multiple-children [a-map children-map]
+  (merge a-map (maps/transform-vals-with children-map (fn [k v] (map :db/id v)))))
+
+(defn process-single-cardinality-ref [old-refs txns-map [fresh-ref-key fresh-ref-value]]
+  (let [old-value (old-refs fresh-ref-key)]
+    (cond 
+     (= old-value fresh-ref-value) txns-map
+     (nil? fresh-ref-value) (assoc txns-map fresh-ref-key (retract-entity-txn old-value))
+     :else (assoc txns-map fresh-ref-key (with-demonic-attributes fresh-ref-value)))))
+
+(defn process-single-cardinality-refs [a-map]
+  (let [old-refs (print-vals "[single] old-refs:" (-> a-map :db/id load-from-db only-single-refs-map))
+        fresh-refs (print-vals "[single] fresh-refs:" (only-single-refs-map a-map))
+        children (print-vals "[single] CHILDREN:" (reduce #(process-single-cardinality-ref old-refs %1 %2) {} fresh-refs))
+        updated-map (annotate-single-children a-map children)]
+    [updated-map (vals children)]))
 
 (defn process-multiple-cardinality-ref [old-refs txns [fresh-ref-key fresh-ref-value]]
   (let [{added :added updated :updated deleted :deleted} (diff (old-refs fresh-ref-key) fresh-ref-value :db/id)]
-    (concat (map with-demonic-attributes added)
-            (map with-demonic-attributes updated)
-            (map retract-entity-txn deleted))))
+    (assoc txns fresh-ref-key (concat (map with-demonic-attributes added)
+                                      (map with-demonic-attributes updated)
+                                      (map retract-entity-txn deleted)))))
 
 (defn process-multiple-cardinality-refs [a-map]
-  (let [old-refs (-> a-map :db/id load-from-db only-multi-refs-map)
-        fresh-refs (only-multi-refs-map a-map)]
-    (reduce #(process-multiple-cardinality-ref old-refs %1 %2) [] fresh-refs)))
+  (let [old-refs (print-vals "[multiple] old-refs:" (-> a-map :db/id load-from-db only-multi-refs-map))
+        fresh-refs (print-vals "[multiple] fresh-refs:" (only-multi-refs-map a-map))
+        children (reduce #(process-multiple-cardinality-ref old-refs %1 %2) {} fresh-refs)
+        updated-map (annotate-multiple-children a-map children)]
+    [updated-map (apply concat (vals children))]))
 
 (defn process-ref-attributes [a-map]
-  (let [[updated-for-multiple-refs multiple-refs-txns] (process-multiple-cardinality-refs a-map)
-        [updated-for-refs single-refs-txns] (process-single-cardinality-refs updated-for-multiple-refs)
-        all-txns (concat multiple-refs-txns single-refs-txns)]
-    (print-vals (conj all-txns updated-for-refs))))
+  (let [[a-map-updated-for-multiple-refs multiple-refs-txns] (print-vals "multiple-refs-txns:" (process-multiple-cardinality-refs a-map))
+        [a-map-updated-for-refs single-refs-txns] (print-vals "single-refs-txns:" (process-single-cardinality-refs a-map-updated-for-multiple-refs))
+        all-child-txns (print-vals "all-refs-txns:" (concat multiple-refs-txns single-refs-txns))]
+    (print-vals "Processed refs:" (conj all-child-txns a-map-updated-for-refs))))

@@ -16,13 +16,18 @@
 (defn init-db [datomic-db-name datomic-schema]
   (initialize-datomic datomic-db-name datomic-schema))
 
+(defn delete-db [datomic-db-name]
+  (db/delete-database datomic-db-name))
+
 (defn run-query [query & extra-inputs]
   (apply q query @DATOMIC-DB extra-inputs))
 
 (defn load-entity [eid]
   (let [e (load-from-db eid)]
     (when (:db/id e)
-      (-> e entity->loadable))))
+      (-> e entity->loadable)
+      ;(print-vals "load-entity:" e "keys:" (keys e))      
+      )))
 
 (defn load-and-transform-with [eid transform]
   (-> eid
@@ -31,6 +36,7 @@
 
 (defn insert [a-map]
   (-> (with-demonic-attributes a-map)
+      (print-vals-> "after demonic attribs:")
       (process-ref-attributes)
       run-transaction)
   a-map)
