@@ -1,7 +1,8 @@
 (ns zolodeck.demonic.core
   (:use [datomic.api :only [q db] :as db]
         zolodeck.demonic.loadable
-        zolodeck.demonic.helper
+        zolodeck.demonic.helper        
+        zolodeck.demonic.refs
         zolodeck.utils.debug))
 
 (defmacro in-demarcation [& body]

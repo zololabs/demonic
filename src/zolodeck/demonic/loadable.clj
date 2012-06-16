@@ -35,8 +35,8 @@
 
   clojure.lang.IFn
   (invoke [this] this)
-  (invoke [this k] (k m))
-  (invoke [this k v] (k m v))
+  (invoke [this k] (get-value m k))
+  (invoke [this k v] (get-value m k v))
   (applyTo [this args] (clojure.lang.AFn/applyToHelper this args))
 
   Object
@@ -48,8 +48,8 @@
 
 (defn entity->loadable [e]
   (-> {:db/id (:db/id e)}
-        (into e)
-        new-loadable))
+      (into e)
+      new-loadable))
 
 (defn entity-id->loadable [e-id]
   (-> (db/entity @DATOMIC-DB e-id)
@@ -61,7 +61,11 @@
   (entity-id->loadable (:db/id value)))
 
 (defmethod load-ref :db.cardinality/many [attrib values]
-  (map #(entity-id->loadable (:db/id %)) values))
+  (let [r (map #(entity-id->loadable (:db/id %)) values)]
+    (when (= attrib :user/friends)
+      (print-vals "VALUES:" values)
+      (print-vals "LOADED:" r))
+    r))
 
 (defn load-attrib-and-update-loadable [m attrib v]
   (let [e (load-ref attrib v)]

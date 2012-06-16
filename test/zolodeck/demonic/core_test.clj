@@ -147,4 +147,5 @@
       (is (= (merge HARINI-DB {:a 1})
              (merge (select-keys (:user/wife siva) (keys HARINI-DB)) {:a 1})))
       (is (= zolodeck.demonic.loadable.Loadable (class (:user/wife siva))))
-      (is (= (list zolodeck.demonic.loadable.Loadable zolodeck.demonic.loadable.Loadable) (map class (:user/friends siva)))))))
+      (is (= (list zolodeck.demonic.loadable.Loadable zolodeck.demonic.loadable.Loadable) (map class (:user/friends siva))))
+      (is (= (list zolodeck.demonic.loadable.Loadable zolodeck.demonic.loadable.Loadable) (map class (siva :user/friends)))))))

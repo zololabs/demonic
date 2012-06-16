@@ -10,10 +10,10 @@
 
 (defn base []
   (demonic-testing "Base setup"
-                   (demonic/insert (-> SIVA-DB
-                                       (assoc :user/wife HARINI-DB)))
+                 (demonic/insert (-> SIVA-DB
+                                       (assoc :user/friends [AMIT-DB DEEPTHI-DB HARINI-DB])))
+
    (print-vals "INSERTING AGAIN")
-   ;(devil/run-transaction [(find-by-fb-id (:id SIVA-FB))])
    (demonic/insert (find-by-fb-id (:id SIVA-FB)))
 
    (let [siva-loaded (find-by-fb-id (:id SIVA-FB))]
