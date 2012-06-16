@@ -4,7 +4,7 @@
   (:require [datomic.api :as db]
             [zolodeck.demonic.schema :as schema]))
 
-(declare get-value)
+(declare get-value seq-entry)
 
 (deftype Loadable [m]
   clojure.lang.IPersistentMap
@@ -31,8 +31,9 @@
     (get-value m k v))
   
   clojure.lang.Seqable
-  (seq [this] (seq m))
-
+  (seq [this] (map seq-entry m))
+  ;(seq [this] (seq m))  
+  
   clojure.lang.IFn
   (invoke [this] this)
   (invoke [this k] (get-value m k))
@@ -50,6 +51,21 @@
   (-> {:db/id (:db/id e)}
       (into e)
       new-loadable))
+
+(defn is-loadable? [v]
+  (instance? zolodeck.demonic.loadable.Loadable v))
+
+(defn is-not-loadable? [v]
+  (not (is-loadable? v)))
+
+(defn to-loadable-if-needed [v]
+  (if (is-not-loadable? v) (entity->loadable v) v))
+
+(defn seq-entry [[k v :as entry]]
+  (cond
+   (schema/is-single-ref-attrib? k) (clojure.lang.MapEntry. k (to-loadable-if-needed v))
+   (schema/is-multiple-ref-attrib? k) (clojure.lang.MapEntry. k (map to-loadable-if-needed v))
+   :else entry))
 
 (defn entity-id->loadable [e-id]
   (-> (db/entity @DATOMIC-DB e-id)
@@ -73,7 +89,7 @@
 
 (defn get-value
   ([m attrib not-found-value]
-     (let [v (m attrib)]
+     (let [v (attrib m)]
        (cond
         (nil? v) not-found-value
         (schema/is-ref? attrib) (load-attrib-and-update-loadable m attrib v)

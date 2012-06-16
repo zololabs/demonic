@@ -57,3 +57,9 @@
 (defn is-strings? [attribute]
   (and (= :db.type/string (get-in @SCHEMA-MAP [attribute :db/valueType]))
        (= :db.cardinality/many (get-in @SCHEMA-MAP [attribute :db/cardinality]))))
+
+(defn is-multiple-ref-attrib? [k]
+  (and (is-ref? k) (is-cardinality-many? k)))
+
+(defn is-single-ref-attrib? [k]
+  (and (is-ref? k) (is-cardinality-one? k)))

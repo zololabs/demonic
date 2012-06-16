@@ -1,17 +1,21 @@
 (ns zolodeck.demonic.play
   (:use [zolodeck.demonic.test-schema]
         [zolodeck.demonic.test]
-        [zolodeck.utils.debug])
+        [zolodeck.utils.debug]
+        clojure.pprint)
   (:require [zolodeck.demonic.core :as demonic]
             [zolodeck.demonic.helper :as devil]))
 
 (defn init-db []
   (demonic/init-db "datomic:mem://demonic-test" TEST-SCHEMA-TX))
 
+(defn setup []
+  (demonic/insert (-> SIVA-DB
+                      (assoc :user/friends [AMIT-DB DEEPTHI-DB HARINI-DB])))  )
+
 (defn base []
   (demonic-testing "Base setup"
-                 (demonic/insert (-> SIVA-DB
-                                       (assoc :user/friends [AMIT-DB DEEPTHI-DB HARINI-DB])))
+    (setup)
 
    (print-vals "INSERTING AGAIN")
    (demonic/insert (find-by-fb-id (:id SIVA-FB)))

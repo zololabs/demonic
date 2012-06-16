@@ -6,20 +6,12 @@
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.demonic.schema :as schema]))
 
-(defn is-multiple-ref-attrib? [k]
-  (and (schema/is-ref? k)
-       (schema/is-cardinality-many? k)))
-
 (defn only-multi-refs-map [a-map]
   (print-vals "only multi class:" (class a-map)
-              (maps/select-keys-if a-map (fn [k _] (is-multiple-ref-attrib? k)))))
-
-(defn is-single-ref-attrib? [k]
-  (and (schema/is-ref? k)
-       (schema/is-cardinality-one? k)))
+              (maps/select-keys-if a-map (fn [k _] (schema/is-multiple-ref-attrib? k)))))
 
 (defn only-single-refs-map [a-map]
-  (maps/select-keys-if a-map (fn [k _] (is-single-ref-attrib? k))))
+  (maps/select-keys-if a-map (fn [k _] (schema/is-single-ref-attrib? k))))
 
 (defn annotate-single-children [a-map children-map]
   (print-vals "Annotate Singles: a-map:" a-map)
