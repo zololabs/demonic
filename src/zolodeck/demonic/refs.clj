@@ -14,8 +14,7 @@
   (maps/select-keys-if a-map (fn [k _] (schema/is-single-ref-attrib? k))))
 
 (defn annotate-single-children [a-map children-map]
-  (print-vals "Annotate Singles: a-map:" a-map)
-  (print-vals "Annotate Children: children:" children-map)
+  (print-vals "[single] Annotate: a-map:" a-map "children-map:" children-map)
   (-> (merge a-map (maps/transform-vals-with children-map (fn [k v] (:db/id v))))
       (maps/transform-vals-with (fn [_ v] (or (:db/id v) v)))))
 
@@ -40,17 +39,12 @@
 (defn process-multiple-cardinality-ref [old-refs txns [fresh-ref-key fresh-ref-value]]
   (let [{added :added remaining :remaining deleted :deleted} (print-vals "[multiple] DIFF:" 
                                                                          (diff (old-refs fresh-ref-key) fresh-ref-value :db/id))]
-    (print-vals "OLD-refs classes:" (map class (old-refs fresh-ref-key)))
-    (print-vals "REMAIN classes:" (map class remaining))
-    (assoc txns fresh-ref-key (concat (map with-demonic-attributes added)
-                                      (print-vals "REMAINING with attribs:" (map with-demonic-attributes remaining))
+    (assoc txns fresh-ref-key (concat (print-vals "ADDED with attribs:" (map with-demonic-attributes added))
+                                      (map with-demonic-attributes remaining)
                                       (map retract-entity-txn deleted)))))
 
 (defn process-multiple-cardinality-refs [a-map]
-  (let [old-refs (print-vals "[multiple] old-refs:" (-> a-map :db/id load-from-db entity->loadable))
-        _ (print-vals "[multiple] original friends:" (map class (:user/friends old-refs)))
-        old-refs (only-multi-refs-map old-refs)
-        _ (print-vals "[multiple] after friends:" (map class (:user/friends old-refs)))
+  (let [old-refs (print-vals "[multiple] old-refs:" (-> a-map :db/id load-from-db entity->loadable only-multi-refs-map))
         fresh-refs (print-vals "[multiple] fresh-refs:" (only-multi-refs-map a-map))
         children (reduce #(process-multiple-cardinality-ref old-refs %1 %2) {} fresh-refs)
         updated-map (annotate-multiple-children a-map children)]
