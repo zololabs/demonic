@@ -1,5 +1,6 @@
 (ns zolodeck.demonic.test-schema
-  (:use [zolodeck.demonic.schema]
+  (:use [zolodeck.utils.debug]
+        [zolodeck.demonic.schema]
         [zolodeck.demonic.core :only [load-entity] :as demonic]))
 
 (def SIVA-FB {:gender "male",

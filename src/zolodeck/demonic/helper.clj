@@ -55,6 +55,10 @@
 
 ;; creating new datomic transaction ready maps
 
+(defn entity->map [e]
+  (-> (select-keys e (keys e))
+      (assoc :db/id (:db/id e))))
+
 (defn non-db-keys [a-map]
   (remove #(= :db/id %) (keys a-map)))
 
@@ -88,6 +92,4 @@
   (-> a-map
       merge-guid
       merge-db-id))
-
-
 

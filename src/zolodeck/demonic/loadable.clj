@@ -42,14 +42,25 @@
 
   Object
   (equals [self o]
-    (= self 0)))
+    (= self o)))
 
 (defn new-loadable [a-map]
   (Loadable. a-map))
 
+;; (defn print-friends [m]
+;;   (if m
+;;     (print-vals "Map Into Friends:" (:user/friends m)))
+;;   m)
+
+;; (defn entity->loadable [e]
+;;   (-> {:db/id (:db/id e)}
+;;       (merge e)
+;;       print-friends
+;;       new-loadable))
+
 (defn entity->loadable [e]
-  (-> {:db/id (:db/id e)}
-      (into e)
+  ;(print-vals "Friends before:" (:user/friends e))
+  (-> (entity->map e)
       new-loadable))
 
 (defn is-loadable? [v]
@@ -67,25 +78,20 @@
    (schema/is-multiple-ref-attrib? k) (clojure.lang.MapEntry. k (map to-loadable-if-needed v))
    :else entry))
 
-(defn entity-id->loadable [e-id]
-  (-> (db/entity @DATOMIC-DB e-id)
-      entity->loadable))
+;; (defn entity-id->loadable [e-id]
+;;   (-> (db/entity @DATOMIC-DB e-id)
+;;       entity->loadable))
 
 (defmulti load-ref (fn [attrib _] (schema/cardinality attrib)))
 
 (defmethod load-ref :db.cardinality/one [attrib value]
-  (entity-id->loadable (:db/id value)))
+  (entity->loadable value))
 
 (defmethod load-ref :db.cardinality/many [attrib values]
-  (let [r (map #(entity-id->loadable (:db/id %)) values)]
-    (when (= attrib :user/friends)
-      (print-vals "VALUES:" values)
-      (print-vals "LOADED:" r))
-    r))
+  (map entity->loadable values))
 
 (defn load-attrib-and-update-loadable [m attrib v]
-  (let [e (load-ref attrib v)]
-    e))
+  (load-ref attrib v))
 
 (defn get-value
   ([m attrib not-found-value]
