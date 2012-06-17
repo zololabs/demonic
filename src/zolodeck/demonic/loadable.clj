@@ -1,6 +1,7 @@
 (ns zolodeck.demonic.loadable
   (:use zolodeck.demonic.helper
-        zolodeck.utils.debug)
+        zolodeck.utils.debug
+        [slingshot.slingshot :only [throw+ try+]])
   (:require [datomic.api :as db]
             [zolodeck.demonic.schema :as schema]))
 
@@ -32,7 +33,6 @@
   
   clojure.lang.Seqable
   (seq [this] (map seq-entry m))
-  ;(seq [this] (seq m))  
   
   clojure.lang.IFn
   (invoke [this] this)
@@ -45,32 +45,18 @@
     (= self o)))
 
 (defn new-loadable [a-map]
+  (if (instance? datomic.query.EntityMap a-map)
+    (throw+ {:severity :fatal} "Loadable recieved unexpected object of type datomic.query.EntityMap"))
   (Loadable. a-map))
 
-;; (defn print-friends [m]
-;;   (if m
-;;     (print-vals "Map Into Friends:" (:user/friends m)))
-;;   m)
-
-;; (defn entity->loadable [e]
-;;   (-> {:db/id (:db/id e)}
-;;       (merge e)
-;;       print-friends
-;;       new-loadable))
-
 (defn entity->loadable [e]
-  ;(print-vals "Friends before:" (:user/friends e))
-  (-> (entity->map e)
-      new-loadable))
+  (-> e entity->map new-loadable))
 
 (defn is-loadable? [v]
   (instance? zolodeck.demonic.loadable.Loadable v))
 
-(defn is-not-loadable? [v]
-  (not (is-loadable? v)))
-
 (defn to-loadable-if-needed [v]
-  (if (is-not-loadable? v) (entity->loadable v) v))
+  (if (is-loadable? v) v (entity->loadable v)))
 
 (defn seq-entry [[k v :as entry]]
   (cond
@@ -78,27 +64,13 @@
    (schema/is-multiple-ref-attrib? k) (clojure.lang.MapEntry. k (map to-loadable-if-needed v))
    :else entry))
 
-;; (defn entity-id->loadable [e-id]
-;;   (-> (db/entity @DATOMIC-DB e-id)
-;;       entity->loadable))
-
-(defmulti load-ref (fn [attrib _] (schema/cardinality attrib)))
-
-(defmethod load-ref :db.cardinality/one [attrib value]
-  (entity->loadable value))
-
-(defmethod load-ref :db.cardinality/many [attrib values]
-  (map entity->loadable values))
-
-(defn load-attrib-and-update-loadable [m attrib v]
-  (load-ref attrib v))
-
 (defn get-value
   ([m attrib not-found-value]
      (let [v (attrib m)]
        (cond
         (nil? v) not-found-value
-        (schema/is-ref? attrib) (load-attrib-and-update-loadable m attrib v)
+        (schema/is-single-ref-attrib? attrib) (entity->loadable v)
+        (schema/is-multiple-ref-attrib? attrib) (map entity->loadable v)         
         :otherwise v)))
   ([m attrib]
      (get-value m attrib nil)))

@@ -4,6 +4,7 @@
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [com.datomic/datomic "0.1.3065"]
 
+                 [slingshot "0.10.2"]                 
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
 
   :plugins [[lein-swank "1.4.4"]

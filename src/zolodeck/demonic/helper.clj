@@ -63,33 +63,11 @@
   (remove #(= :db/id %) (keys a-map)))
 
 (defn- guid-key [a-map]
-  (-> a-map
-      non-db-keys
-      first
-      .getNamespace
-      (str "/guid")
-      keyword))
-
-;; (defn merge-guid [a-map]
-;;   (if a-map
-;;     (let [gk (guid-key a-map)
-;;           guid (gk a-map)
-;;           db-id (:db/id a-map)]
-;;       (print-vals "GK, guid, db-id:" gk guid (:db/id a-map))
-;;       (print-vals "merged guid:" (-> (select-keys a-map (keys a-map)) 
-;;                                      (assoc gk (or guid (random-guid)))
-;;                                      (assoc :db/id (or db-id (db/tempid :db.part/user))))))))
-
-(defn merge-guid [a-map]
-  (if a-map
-    (merge {(guid-key a-map) (random-guid)} a-map)))
-
-(defn merge-db-id [a-map]
-  (->  {:db/id (db/tempid :db.part/user)}
-       (merge a-map)))
+  (-> a-map non-db-keys first .getNamespace (str "/guid") keyword))
 
 (defn with-demonic-attributes [a-map]
-  (-> a-map
-      merge-guid
-      merge-db-id))
+  (if a-map
+    (->> a-map
+         (merge {(guid-key a-map) (random-guid)})
+         (merge {:db/id (db/tempid :db.part/user)}))))
 
