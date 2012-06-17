@@ -42,7 +42,9 @@
 
   Object
   (equals [self o]
-    (= self o)))
+    (= self o))
+  (hashCode [self]
+    (.hashCode m)))
 
 (defn new-loadable [a-map]
   (if (instance? datomic.query.EntityMap a-map)
