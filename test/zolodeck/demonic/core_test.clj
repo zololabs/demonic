@@ -112,18 +112,15 @@
              (set (map :user/first-name (:user/friends siva)))))
       (is (= HARINI-DB (select-keys (:user/wife siva) [:user/first-name :user/last-name]))))))
 
-(deftest test-loadable
-  (cleanup-siva)
-  (demonic-testing "loadble behave like maps"
+(deftest test-graph-update
+  (demonic-testing "Can save the same graph again. Nothing should change"
     (demonic/insert (-> SIVA-DB 
                         (assoc :user/wife HARINI-DB)
                         (assoc :user/friends [AMIT-DB DEEPTHI-DB])))
+    (demonic/insert (print-vals "[first] Siva Loaded :" (find-by-fb-id (:id SIVA-FB))))
     (let [siva (find-by-fb-id (:id SIVA-FB))]
-      (is (= (merge SIVA-DB {:a 1})
-             (merge (select-keys siva (keys SIVA-DB)) {:a 1})))
-      (is (= (assoc SIVA-DB :a 1)
-             (assoc (select-keys siva (keys SIVA-DB)) :a 1)))
-      (is (= (merge HARINI-DB {:a 1})
-             (merge (select-keys (:user/wife siva) (keys HARINI-DB)) {:a 1})))
-      (is (= zolodeck.demonic.loadable.Loadable (class (:user/wife siva))))
-      (is (= (list zolodeck.demonic.loadable.Loadable zolodeck.demonic.loadable.Loadable) (map class (:user/friends siva)))))))
+      (is (= (:user/fb-email SIVA-DB) (:user/fb-email siva)))
+      (is (= 2 (count (:user/friends siva))))
+      (is (= (set [(:user/first-name AMIT-DB) (:user/first-name DEEPTHI-DB)])
+             (set (map :user/first-name (:user/friends siva)))))
+      (is (= HARINI-DB (select-keys (:user/wife siva) [:user/first-name :user/last-name]))))))

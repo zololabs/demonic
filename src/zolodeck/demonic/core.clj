@@ -1,6 +1,5 @@
 (ns zolodeck.demonic.core
   (:use [datomic.api :only [q db] :as db]
-        zolodeck.demonic.loadable
         zolodeck.demonic.helper
         zolodeck.utils.debug))
 
@@ -20,9 +19,7 @@
   (apply q query @DATOMIC-DB extra-inputs))
 
 (defn load-entity [eid]
-  (let [e (db/entity @DATOMIC-DB eid)]
-    (when (:db/id e)
-      (-> e entity->loadable))))
+  (db/entity @DATOMIC-DB eid))
 
 (defn load-and-transform-with [eid transform]
   (-> eid
