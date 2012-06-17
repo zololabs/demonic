@@ -26,9 +26,7 @@
 (defn load-entity [eid]
   (let [e (load-from-db eid)]
     (when (:db/id e)
-      (-> e entity->loadable)
-      ;(print-vals "load-entity:" e "keys:" (keys e))      
-      )))
+      (-> e entity->loadable))))
 
 (defn load-and-transform-with [eid transform]
   (-> eid
@@ -37,7 +35,6 @@
 
 (defn insert [a-map]
   (-> (with-demonic-attributes a-map)
-      (print-vals-> "after demonic attribs:")
       (process-ref-attributes)
       run-transaction)
   a-map)
@@ -47,8 +44,8 @@
       insert
       transform))
 
-(defn delete [entity-id]
-  (-> entity-id
+(defn delete [entity]
+  (-> entity
       retract-entity-txn
       vector
       run-transaction))
