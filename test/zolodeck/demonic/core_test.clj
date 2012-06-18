@@ -17,8 +17,7 @@
      (is (nil? (:db/id (find-by-fb-id (:id SIVA-FB))))))))
 
 (defn number-of-users-in-datomic []
-  (print-vals "Number of users in Datomic:"
-              (count (demonic/run-query '[:find ?u :where [?u :user/first-name]]))))
+  (count (demonic/run-query '[:find ?u :where [?u :user/first-name]])))
 
 (defn load-siva-from-db []
   (find-by-fb-id (:id SIVA-FB)))
@@ -126,7 +125,7 @@
           siva-loaded (load-siva-from-db)]
       (is (= 1 (count (:user/friends siva-loaded))))
       (is (= 2 (number-of-users-in-datomic)))
-      (print-vals "INSERTING ADDITION!")
+
       (let [siva-graph (assoc siva-loaded :user/friends (conj  (:user/friends siva-loaded) DEEPTHI-DB))
             _ (demonic/insert siva-graph)
             siva-reloaded (load-siva-from-db)]
@@ -163,7 +162,6 @@
       (is (= 2 (count (:user/friends siva-loaded))))
       (is (= 3 (number-of-users-in-datomic)))
 
-      (print-vals "STARTING REPLACEMENT!")
       (let [siva-graph (assoc siva-loaded :user/friends [ADI-DB ALEKHYA-DB])
             _ (demonic/insert siva-graph)
             siva-reloaded (load-siva-from-db)]
