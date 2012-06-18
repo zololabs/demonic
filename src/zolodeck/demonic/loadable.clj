@@ -47,18 +47,15 @@
     (.hashCode m)))
 
 (defn new-loadable [a-map]
-  (if (instance? datomic.query.EntityMap a-map)
+  (if (is-entity-map? a-map)
     (throw+ {:severity :fatal} "Loadable recieved unexpected object of type datomic.query.EntityMap"))
   (Loadable. a-map))
 
 (defn entity->loadable [e]
   (-> e entity->map new-loadable))
 
-(defn is-loadable? [v]
-  (instance? zolodeck.demonic.loadable.Loadable v))
-
 (defn to-loadable-if-needed [v]
-  (if (is-loadable? v) v (entity->loadable v)))
+  (if (is-entity-map? v) (entity->loadable v) v))
 
 (defn seq-entry [[k v :as entry]]
   (cond
@@ -71,8 +68,8 @@
      (let [v (attrib m)]
        (cond
         (nil? v) not-found-value
-        (schema/is-single-ref-attrib? attrib) (entity->loadable v)
-        (schema/is-multiple-ref-attrib? attrib) (map entity->loadable v)         
+        (schema/is-single-ref-attrib? attrib) (to-loadable-if-needed v)
+        (schema/is-multiple-ref-attrib? attrib) (map to-loadable-if-needed v)         
         :otherwise v)))
   ([m attrib]
      (get-value m attrib nil)))

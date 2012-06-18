@@ -11,7 +11,7 @@
 
 (defn setup []
   (demonic/insert (-> SIVA-DB
-                      (assoc :user/friends [AMIT-DB DEEPTHI-DB])
+                      (assoc :user/friends [AMIT-DB])
                       (assoc :user/wife HARINI-DB))))
 
 (defn base []

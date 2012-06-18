@@ -55,6 +55,9 @@
 
 ;; creating new datomic transaction ready maps
 
+(defn is-entity-map? [v]
+  (instance? datomic.query.EntityMap v))
+
 (defn entity->map [e]
   (-> (select-keys e (keys e))
       (assoc :db/id (:db/id e))))

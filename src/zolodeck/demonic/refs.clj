@@ -7,8 +7,7 @@
         [zolodeck.demonic.schema :as schema]))
 
 (defn only-multi-refs-map [a-map]
-  (print-vals "only multi class:" (class a-map)
-              (maps/select-keys-if a-map (fn [k _] (schema/is-multiple-ref-attrib? k)))))
+  (maps/select-keys-if a-map (fn [k _] (schema/is-multiple-ref-attrib? k))))
 
 (defn only-single-refs-map [a-map]
   (maps/select-keys-if a-map (fn [k _] (schema/is-single-ref-attrib? k))))
@@ -51,6 +50,7 @@
     [updated-map (apply concat (vals children))]))
 
 (defn process-ref-attributes [a-map]
+  (print-vals "PROCESSING-REFS:" a-map)
   (let [[a-map-updated-for-multiple-refs multiple-refs-txns] (print-vals "multiple-refs-txns:" (process-multiple-cardinality-refs a-map))
         [a-map-updated-for-refs single-refs-txns] (print-vals "single-refs-txns:" (process-single-cardinality-refs a-map-updated-for-multiple-refs))
         all-child-txns (print-vals "all-refs-txns:" (concat multiple-refs-txns single-refs-txns))]
