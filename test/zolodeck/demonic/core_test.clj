@@ -92,6 +92,8 @@
           siva-loaded (load-siva-from-db)
           _ (demonic/insert siva-loaded)
           siva-reloaded (load-siva-from-db)]
+      (is (not (nil? (get-in siva-loaded [:user/wife :db/id]))))
+      (is (not (nil? (get-in siva-reloaded [:user/wife :db/id]))))
       (is (= (get-in siva-loaded [:user/wife :db/id])
              (get-in siva-reloaded [:user/wife :db/id])))
       (is (= 2 (number-of-users-in-datomic))))))
@@ -102,6 +104,7 @@
     (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])]
       (demonic/insert siva-graph))
     (is (not (nil? (:db/id (load-siva-from-db)))))
+    (is (= 2 (count (:user/friends (load-siva-from-db)))))
     (is (not (nil? (:db/id (find-by-first-name (:user/first-name AMIT-DB))))))
     (is (not (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB))))))))
 
@@ -113,6 +116,8 @@
           siva-loaded (load-siva-from-db)
           _ (demonic/insert siva-loaded)
           siva-reloaded (load-siva-from-db)]
+      (is (= 2 (count (:user/friends (siva-loaded)))))
+      (is (= 2 (count (:user/friends (siva-reloaded)))))
       (is-same-sequence? (map :db/id (:user/friends siva-loaded))
                          (map :db/id (:user/friends siva-reloaded)))
       (is (= 3 (number-of-users-in-datomic))))))
@@ -165,6 +170,10 @@
       (let [siva-graph (assoc siva-loaded :user/friends [ADI-DB ALEKHYA-DB])
             _ (demonic/insert siva-graph)
             siva-reloaded (load-siva-from-db)]
+        (is (nil? (:db/id (find-by-first-name (:user/first-name AMIT-DB)))))
+        (is (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB)))))
+        (is (not (nil? (:db/id (find-by-first-name (:user/first-name ADI-DB))))))
+        (is (not (nil? (:db/id (find-by-first-name (:user/first-name ALEKHYA-DB))))))
         (is (= 2 (count (:user/friends siva-reloaded))))
         (is (= 3 (number-of-users-in-datomic)))))))
 
