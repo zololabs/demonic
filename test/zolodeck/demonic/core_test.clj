@@ -141,12 +141,34 @@
           siva-loaded (load-siva-from-db)]
       (is (= 2 (count (:user/friends siva-loaded))))      
       (is (= 3 (number-of-users-in-datomic)))
-      (print-vals "STARTING REMOVAL!, siva-loaded:" siva-loaded)
+      
       (let [siva-graph (assoc siva-loaded :user/friends (take 1 (:user/friends siva-loaded)))
             _ (demonic/insert siva-graph)
             siva-reloaded (load-siva-from-db)]
         (is (= 1 (count (:user/friends siva-reloaded))))
-        (is (= 2 (number-of-users-in-datomic)))))))
+        (is (= 2 (number-of-users-in-datomic)))
+
+        (let [siva-graph (assoc siva-loaded :user/friends nil)
+              _ (demonic/insert siva-graph)
+              siva-reloaded (load-siva-from-db)]
+          (is (empty? (:user/friends siva-reloaded)))
+          (is (= 1 (number-of-users-in-datomic))))))))
+
+(deftest test-user-has-friends-replacement
+  (cleanup-siva)
+  (demonic-testing "can persist siva and his friends"
+    (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])
+          _ (demonic/insert siva-graph)
+          siva-loaded (load-siva-from-db)]
+      (is (= 2 (count (:user/friends siva-loaded))))
+      (is (= 3 (number-of-users-in-datomic)))
+
+      (print-vals "STARTING REPLACEMENT!")
+      (let [siva-graph (assoc siva-loaded :user/friends [ADI-DB ALEKHYA-DB])
+            _ (demonic/insert siva-graph)
+            siva-reloaded (load-siva-from-db)]
+        (is (= 2 (count (:user/friends siva-reloaded))))
+        (is (= 3 (number-of-users-in-datomic)))))))
 
 (deftest test-user-has-a-wife-and-friends-persistence
   (cleanup-siva)

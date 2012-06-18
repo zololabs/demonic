@@ -30,8 +30,14 @@
 (def DEEPTHI-DB {:user/first-name "Deepthi"
                  :user/last-name "Somasunder"})
 
+(def ADI-DB {:user/first-name "Aditya"
+             :user/last-name "Rathore"})
+
 (def HARINI-DB {:user/first-name "Harini"
                 :user/last-name "Nambiraghavan"})
+
+(def ALEKHYA-DB {:user/first-name "Alekhya"
+                 :user/last-name "Jagadeesan"})
 
 (def TEST-SCHEMA-TX [
    (uuid-fact-schema :user/guid false "A GUID for the user")
