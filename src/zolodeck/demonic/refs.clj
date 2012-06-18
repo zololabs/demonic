@@ -19,7 +19,8 @@
 
 (defn annotate-multiple-children [a-map children-map]
   (print-vals "[multiple] annotating: a-map:" a-map "children-map:" children-map)
-  (merge a-map (maps/transform-vals-with children-map (fn [k v] (map :db/id v)))))
+  ;;(:db/id [retract]) is nil, so use keep to only pick up actual updates/additions
+  (merge a-map (maps/transform-vals-with children-map (fn [k v] (keep :db/id v))))) 
 
 (defn process-single-cardinality-ref [old-refs txns-map [fresh-ref-key fresh-ref-value]]
   (let [old-value (old-refs fresh-ref-key)]
@@ -40,7 +41,7 @@
                                                                          (diff (old-refs fresh-ref-key) fresh-ref-value :db/id))]
     (assoc txns fresh-ref-key (concat (print-vals "ADDED with attribs:" (map with-demonic-attributes added))
                                       (map with-demonic-attributes remaining)
-                                      (map retract-entity-txn deleted)))))
+                                      (print-vals "DELETED txns:" (map retract-entity-txn deleted))))))
 
 (defn process-multiple-cardinality-refs [a-map]
   (let [old-refs (print-vals "[multiple] old-refs:" (-> a-map :db/id load-from-db entity->loadable only-multi-refs-map))
