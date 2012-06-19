@@ -70,6 +70,8 @@
 
 (defn with-demonic-attributes [a-map]
   (if a-map
-    (->> a-map
-         (merge {(guid-key a-map) (random-guid)})
-         (merge {:db/id (db/tempid :db.part/user)}))))
+    (let [gk (guid-key a-map)]
+      (-> a-map
+          entity->map          
+          (assoc gk (or (gk a-map) (random-guid)))
+          (assoc :db/id (or (:db/id a-map) (db/tempid :db.part/user)))))))
