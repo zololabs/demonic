@@ -3,6 +3,7 @@
         [zolodeck.utils.clojure :only [defrunonce random-guid]]
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.utils.debug]
+        [zolodeck.utils.clojure]
         [zolodeck.demonic.schema :as schema]))
 
 (def CONN)
@@ -27,6 +28,16 @@
 (defn get-db []
   (db/db CONN))
 
+(defn temp-db-id? [eid]
+  (map? eid))
+
+(defn load-from-db [eid]
+  (if (and eid (not (temp-db-id? eid)))
+    (db/entity @DATOMIC-DB eid)))
+
+(defn retract-entity-txn [entity]
+  [:db.fn/retractEntity (:db/id entity)])
+
 (defn run-transaction [tx-data]
   (swap! TX-DATA concat tx-data)
   (swap! DATOMIC-DB db/with tx-data))
@@ -44,49 +55,21 @@
 
 ;; creating new datomic transaction ready maps
 
+(defn is-entity-map? [v]
+  (instance? datomic.query.EntityMap v))
+
+(defn entity->map [e]
+  (-> (select-keys e (keys e))
+      (assoc :db/id (:db/id e))))
+
+(defn non-db-keys [a-map]
+  (remove #(= :db/id %) (keys a-map)))
+
 (defn- guid-key [a-map]
-  (-> a-map
-      keys
-      first
-      .getNamespace
-      (str "/guid")
-      keyword))
-
-(defn merge-guid [a-map]
-  (if a-map
-    (merge {(guid-key a-map) (random-guid)} a-map)))
-
-(defn merge-db-id [a-map]
-  (-> {:db/id (db/tempid :db.part/user)}
-      (merge a-map)))
+  (-> a-map non-db-keys first .getNamespace (str "/guid") keyword))
 
 (defn with-demonic-attributes [a-map]
-  (-> a-map
-      merge-guid
-      merge-db-id))
-
-;; handling reference attributes
-
-(defn collect-new-objects [refs-map]
-  (maps/transform-vals-with refs-map (fn [attribute value]
-                                       (if (sequential? value)
-                                         (map with-demonic-attributes value)
-                                         (with-demonic-attributes value)))))
-
-(defn- update-obj-with-db-ids [a-map refs-map new-objects-map]
-  (reduce (fn [m k] (if (map? (m k))
-                      (assoc m k (:db/id (new-objects-map k)))
-                      (assoc m k (map :db/id (new-objects-map k)))))
-          a-map (keys refs-map)))
-
-(defn- gather-new-objects [new-objects]
-  (reduce (fn [collected obj]
-            (if (sequential? obj)
-              (concat obj collected)
-              (conj collected obj))) () new-objects))
-
-(defn process-ref-attributes [a-map]
-  (let [refs-map (maps/select-keys-if a-map (fn [k _] (schema/is-ref? k)))
-        new-objects-map (collect-new-objects refs-map)]
-    (conj (-> new-objects-map vals gather-new-objects reverse)
-          (update-obj-with-db-ids a-map refs-map new-objects-map))))
+  (if a-map
+    (->> a-map
+         (merge {(guid-key a-map) (random-guid)})
+         (merge {:db/id (db/tempid :db.part/user)}))))
