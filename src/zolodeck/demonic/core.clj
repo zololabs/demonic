@@ -34,9 +34,10 @@
       transform))
 
 (defn insert [a-map]
-  (-> (with-demonic-attributes a-map)
-      (process-ref-attributes)
-      run-transaction)
+  (when a-map
+    (-> (with-demonic-attributes a-map)
+        (process-ref-attributes)
+        run-transaction))
   a-map)
 
 (defn insert-and-transform-with [a-map transform]

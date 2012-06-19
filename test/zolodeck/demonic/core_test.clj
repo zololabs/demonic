@@ -60,6 +60,9 @@
     (demonic/in-demarcation
      (is (nil? (:db/id (find-by-fb-id "10000")))))))
 
+(deftest test-inserting-a-nil
+  (testing "should not throw any exception. It should just return nil"
+    (is (nil? (demonic/insert nil)))))
 
 (deftest test-new-user-persistence
   (cleanup-siva)
