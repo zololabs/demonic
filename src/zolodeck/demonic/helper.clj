@@ -38,6 +38,9 @@
 (defn retract-entity-txn [entity]
   [:db.fn/retractEntity (:db/id entity)])
 
+(defn append-ref-txn [entity attrib value-entities]
+  [:db/add (:db/id entity) attrib (map :db/id value-entities)])
+
 (defn run-transaction [tx-data]
   (swap! TX-DATA concat tx-data)
   (swap! DATOMIC-DB db/with tx-data))

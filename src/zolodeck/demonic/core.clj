@@ -39,5 +39,10 @@
 (defn insert-and-transform-with [a-map transform]
   (-> a-map insert transform))
 
+(defn append [entity attrib value-entities]
+  (let [with-attribs (map with-demonic-attributes value-entities)
+        append-txn (append-ref-txn entity attrib with-attribs)]
+    (run-transaction (conj with-attribs append-txn))))
+
 (defn delete [entity]
   (-> entity retract-entity-txn vector run-transaction))

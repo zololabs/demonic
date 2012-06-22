@@ -111,6 +111,14 @@
     (is (not (nil? (:db/id (find-by-first-name (:user/first-name AMIT-DB))))))
     (is (not (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB))))))))
 
+(deftest test-user-can-append-friends
+  (cleanup-siva)
+  (demonic-testing "can persist siva and his friends"
+    (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])]
+      (demonic/insert siva-graph)
+      (demonic/append (load-siva-from-db) :user/friends [ADI-DB ALEKHYA-DB]))
+    (is (= 4 (count (:user/friends (load-siva-from-db)))))))
+
 (deftest test-user-has-friends-re-insertion
   (cleanup-siva)
   (demonic-testing "can persist siva and his friends"
