@@ -29,24 +29,15 @@
       (-> e entity->loadable))))
 
 (defn load-and-transform-with [eid transform]
-  (-> eid
-      load-entity
-      transform))
+  (-> eid load-entity transform))
 
 (defn insert [a-map]
   (when a-map
-    (-> (with-demonic-attributes a-map)
-        (process-ref-attributes)
-        run-transaction))
+    (-> a-map with-demonic-attributes process-ref-attributes run-transaction))
   a-map)
 
 (defn insert-and-transform-with [a-map transform]
-  (-> a-map
-      insert
-      transform))
+  (-> a-map insert transform))
 
 (defn delete [entity]
-  (-> entity
-      retract-entity-txn
-      vector
-      run-transaction))
+  (-> entity retract-entity-txn vector run-transaction))
