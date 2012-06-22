@@ -10,6 +10,7 @@
 (deftype Loadable [m]
   clojure.lang.IPersistentMap
   (assoc [this k v] (Loadable. (assoc m k v)))
+  (without [this k] (Loadable. (dissoc m k)))
   
   clojure.lang.Associative
   (entryAt [this k]

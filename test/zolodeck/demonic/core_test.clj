@@ -236,6 +236,8 @@
                         (assoc :user/wife HARINI-DB)
                         (assoc :user/friends [AMIT-DB DEEPTHI-DB])))
     (let [siva (load-siva-from-db)]
+      (assoc siva :a 1)
+      (dissoc siva :user/wife)
       (is (= (merge SIVA-DB {:a 1})
              (merge (select-keys siva (keys SIVA-DB)) {:a 1})))
       (is (= (assoc SIVA-DB :a 1)
