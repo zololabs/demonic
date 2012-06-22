@@ -3,7 +3,8 @@
         zolodeck.utils.debug
         [slingshot.slingshot :only [throw+ try+]])
   (:require [datomic.api :as db]
-            [zolodeck.demonic.schema :as schema]))
+            [zolodeck.demonic.schema :as schema]
+            [zolodeck.utils.clojure :as zolo-clj]))
 
 (declare get-value seq-entry)
 
@@ -58,10 +59,15 @@
 (defn to-loadable-if-needed [v]
   (if (is-entity-map? v) (entity->loadable v) v))
 
+(defn to-loadables [values]
+  (if-not (zolo-clj/collection? values)
+    (throw+ {:severity :fatal :value values} (str "Expected a collection , received :" (class values))))
+  (map to-loadable-if-needed values))
+
 (defn seq-entry [[k v :as entry]]
   (cond
    (schema/is-single-ref-attrib? k) (clojure.lang.MapEntry. k (to-loadable-if-needed v))
-   (schema/is-multiple-ref-attrib? k) (clojure.lang.MapEntry. k (map to-loadable-if-needed v))
+   (schema/is-multiple-ref-attrib? k) (clojure.lang.MapEntry. k (to-loadables v))
    :else entry))
 
 (defn get-value
