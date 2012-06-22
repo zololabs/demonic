@@ -23,6 +23,9 @@
 (defn strings-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/string :db.cardinality/many fulltext? doc))
 
+(defn long-fact-schema [attribute fulltext? doc]
+  (fact-schema attribute :db.type/long :db.cardinality/one fulltext? doc))
+
 (defn instant-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/instant :db.cardinality/one fulltext? doc))
 
