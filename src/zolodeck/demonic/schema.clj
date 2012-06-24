@@ -63,3 +63,6 @@
 
 (defn is-single-ref-attrib? [k]
   (and (is-ref? k) (is-cardinality-one? k)))
+
+(defn has-refs? [a-map]
+  (->> a-map keys (some is-ref?)))

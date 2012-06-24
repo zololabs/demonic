@@ -78,3 +78,26 @@
           entity->map          
           (assoc gk (or (gk a-map) (random-guid)))
           (assoc :db/id (or (:db/id a-map) (db/tempid :db.part/user)))))))
+
+(declare process-map)
+
+(def ^:dynamic children)
+
+(defn process-attrib [[attrib value]]
+  ;(print-vals "process-attrib, a,v:" attrib value)
+  (cond
+   (schema/is-single-ref-attrib? attrib) [attrib (:db/id (process-map value))]
+   (schema/is-multiple-ref-attrib? attrib) [attrib (doall (map :db/id (map process-map value)))]   
+   :else [attrib value]))
+
+(defn process-map
+  ([a-map]
+     (let [o (apply hash-map (mapcat process-attrib (with-demonic-attributes a-map)))]
+       (swap! children conj o)
+       o)))
+
+(defn demonic-process [a-map]
+  (binding [children (atom [])]
+    (process-map a-map)
+    ;(print-vals "CHILDREN:" @children)
+    @children))

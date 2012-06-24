@@ -1,7 +1,7 @@
 (ns zolodeck.demonic.core-test
   (:use [clojure.test :only [run-tests deftest is are testing]]
         [zolodeck.demonic.core :only [init-db in-demarcation run-query delete] :as demonic]
-        [zolodeck.demonic.helper :only [DATOMIC-TEST]]
+        [zolodeck.demonic.helper :only [DATOMIC-TEST demonic-process]]
         [zolodeck.demonic.test-schema]
         [zolodeck.demonic.test]
         [zolodeck.utils.debug]
@@ -215,6 +215,16 @@
       (is-same-sequence? (map :db/id (:user/friends siva-loaded))
                          (map :db/id (:user/friends siva-reloaded)))
       (is (= 4 (number-of-users-in-datomic))))))
+
+(deftest test-user-has-a-friends-who-have-friends
+  (cleanup-siva)
+  (demonic-testing "can persist siva, his wife, and his friends"
+    (let [deepthi-graph (assoc DEEPTHI-DB :user/friends [ADI-DB ALEKHYA-DB])
+          siva-graph (-> SIVA-DB 
+                         (assoc :user/friends [AMIT-DB deepthi-graph]))]
+      (demonic/insert siva-graph))     
+    (is (not (nil? (:db/id (load-siva-from-db)))))
+    (is (= 5 (number-of-users-in-datomic)))))
 
 (deftest test-graph-loads
   (cleanup-siva)
