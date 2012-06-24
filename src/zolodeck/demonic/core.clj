@@ -35,7 +35,7 @@
   (when a-map
     ;(-> a-map with-demonic-attributes process-ref-attributes
                                         ;run-transaction)
-    (-> a-map demonic-process run-transaction))
+    (-> a-map process-graph run-transaction))
   a-map)
 
 (defn insert-and-transform-with [a-map transform]

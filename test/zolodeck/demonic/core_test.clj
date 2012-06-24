@@ -1,7 +1,7 @@
 (ns zolodeck.demonic.core-test
   (:use [clojure.test :only [run-tests deftest is are testing]]
         [zolodeck.demonic.core :only [init-db in-demarcation run-query delete] :as demonic]
-        [zolodeck.demonic.helper :only [DATOMIC-TEST demonic-process]]
+        [zolodeck.demonic.helper :only [DATOMIC-TEST]]
         [zolodeck.demonic.test-schema]
         [zolodeck.demonic.test]
         [zolodeck.utils.debug]

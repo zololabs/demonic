@@ -6,49 +6,44 @@
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.demonic.schema :as schema]))
 
-(defn only-multi-refs-map [a-map]
-  (maps/select-keys-if a-map (fn [k _] (schema/is-multiple-ref-attrib? k))))
+(declare process-map)
 
-(defn only-single-refs-map [a-map]
-  (maps/select-keys-if a-map (fn [k _] (schema/is-single-ref-attrib? k))))
+(def ^:dynamic children)
 
-(defn annotate-single-children [a-map children-map]
-  (-> (merge a-map (maps/transform-vals-with children-map (fn [k v] (:db/id v))))
-      (maps/transform-vals-with (fn [_ v] (or (:db/id v) v)))))
+(defn add-child-txn! [txn]
+  (swap! children conj txn)
+  nil)
 
-(defn annotate-multiple-children [a-map children-map]
-  ;;(:db/id [retract]) is nil, so use keep to only pick up actual updates/additions
-  (merge a-map (maps/transform-vals-with children-map (fn [k v] (keep :db/id v))))) 
+(defn add-children-txns! [txns]
+  (swap! children concat txns)
+  nil)
 
-(defn process-single-cardinality-ref [old-refs txns-map [fresh-ref-key fresh-ref-value]]
-  (let [old-value (old-refs fresh-ref-key)]
-    (cond 
-     (= old-value fresh-ref-value) txns-map
-     (nil? fresh-ref-value) (assoc txns-map fresh-ref-key (retract-entity-txn old-value))
-     :else (assoc txns-map fresh-ref-key (with-demonic-attributes fresh-ref-value)))))
+(defn single-ref-attrib [attrib old-value new-value]
+  (cond
+   (nil? new-value) (add-child-txn! (retract-entity-txn old-value))
+   :else [attrib (:db/id (process-map new-value))]))
 
-(defn process-single-cardinality-refs [a-map]
-  (let [old-refs (-> a-map :db/id load-from-db only-single-refs-map)
-        fresh-refs (only-single-refs-map a-map)
-        children (reduce #(process-single-cardinality-ref old-refs %1 %2) {} fresh-refs)
-        updated-map (annotate-single-children a-map children)]
-    [updated-map (vals children)]))
+(defn multiple-ref-attrib [attrib old-values new-values]
+  (let [deleted (:deleted (diff old-values new-values :db/id))]
+    (add-children-txns! (map retract-entity-txn deleted)))
+  [attrib (doall (map :db/id (map process-map new-values)))])
 
-(defn process-multiple-cardinality-ref [old-refs txns [fresh-ref-key fresh-ref-value]]
-  (let [{added :added remaining :remaining deleted :deleted} (diff (old-refs fresh-ref-key) fresh-ref-value :db/id)]
-    (assoc txns fresh-ref-key (concat (map with-demonic-attributes added)
-                                      (map with-demonic-attributes remaining)
-                                      (map retract-entity-txn deleted)))))
+(defn process-attrib [old-map [attrib value]]
+  (let [old-value (attrib old-map)]
+    (cond
+     (schema/is-single-ref-attrib? attrib) (single-ref-attrib attrib old-value value)
+     (schema/is-multiple-ref-attrib? attrib) (multiple-ref-attrib attrib old-value value)
+     :else [attrib value])))
 
-(defn process-multiple-cardinality-refs [a-map]
-  (let [old-refs (-> a-map :db/id load-from-db entity->loadable only-multi-refs-map)
-        fresh-refs (only-multi-refs-map a-map)
-        children (reduce #(process-multiple-cardinality-ref old-refs %1 %2) {} fresh-refs)
-        updated-map (annotate-multiple-children a-map children)]
-    [updated-map (apply concat (vals children))]))
+(defn process-map
+  ([a-map]
+     (let [with-attribs (with-demonic-attributes a-map)
+           old-map (-> with-attribs :db/id load-from-db)
+           obj (apply hash-map (mapcat #(process-attrib old-map %) with-attribs))]
+       (add-child-txn! obj)
+       obj)))
 
-(defn process-ref-attributes [a-map]
-  (let [[a-map-updated-for-multiple-refs multiple-refs-txns] (process-multiple-cardinality-refs a-map)
-        [a-map-updated-for-refs single-refs-txns] (process-single-cardinality-refs a-map-updated-for-multiple-refs)
-        all-child-txns (concat multiple-refs-txns single-refs-txns)]
-    (conj all-child-txns a-map-updated-for-refs)))
+(defn process-graph [a-map]
+  (binding [children (atom [])]
+    (process-map a-map)
+    @children))
