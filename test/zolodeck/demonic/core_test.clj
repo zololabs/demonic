@@ -116,7 +116,7 @@
   (demonic-testing "can persist siva and his friends"
     (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])]
       (demonic/insert siva-graph)
-      (demonic/append (load-siva-from-db) :user/friends [ADI-DB ALEKHYA-DB]))
+      (demonic/append-multiple (load-siva-from-db) :user/friends [ADI-DB ALEKHYA-DB]))
     (is (= 4 (count (:user/friends (load-siva-from-db)))))))
 
 (deftest test-user-has-friends-re-insertion
