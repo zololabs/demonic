@@ -113,7 +113,7 @@
 
 (deftest test-user-can-append-friends
   (cleanup-siva)
-  (demonic-testing "can persist siva and his friends"
+  (demonic-testing "can persist append to siva's friends"
     (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])]
       (demonic/insert siva-graph)
       (demonic/append-multiple (load-siva-from-db) :user/friends [ADI-DB ALEKHYA-DB]))
@@ -121,7 +121,7 @@
 
 (deftest test-user-has-friends-re-insertion
   (cleanup-siva)
-  (demonic-testing "can persist siva and his friends"
+  (demonic-testing "can re-persist siva and his friends"
     (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])
           _ (demonic/insert siva-graph)
           siva-loaded (load-siva-from-db)
@@ -135,7 +135,7 @@
 
 (deftest test-user-has-friends-addition
   (cleanup-siva)
-  (demonic-testing "can persist siva and his friends"
+  (demonic-testing "can persist siva, and a friend, and then another friend"
     (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB])
           _ (demonic/insert siva-graph)
           siva-loaded (load-siva-from-db)]
@@ -150,7 +150,7 @@
 
 (deftest test-user-has-friends-removal
   (cleanup-siva)
-  (demonic-testing "can persist siva and his friends"
+  (demonic-testing "can persist siva, his friends, and then can remove them"
     (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])
           _ (demonic/insert siva-graph)
           siva-loaded (load-siva-from-db)]
@@ -171,7 +171,7 @@
 
 (deftest test-user-has-friends-replacement
   (cleanup-siva)
-  (demonic-testing "can persist siva and his friends"
+  (demonic-testing "can persist siva and his friends, and then replace them"
     (let [siva-graph (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB])
           _ (demonic/insert siva-graph)
           siva-loaded (load-siva-from-db)]
@@ -218,7 +218,7 @@
 
 (deftest test-user-has-a-friends-who-have-friends
   (cleanup-siva)
-  (demonic-testing "can persist siva, his wife, and his friends"
+  (demonic-testing "can re-persist siva, his wife, and his friends"
     (let [deepthi-graph (assoc DEEPTHI-DB :user/friends [ADI-DB ALEKHYA-DB])
           siva-graph (-> SIVA-DB 
                          (assoc :user/friends [AMIT-DB deepthi-graph]))]
