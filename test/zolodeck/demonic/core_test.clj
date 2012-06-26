@@ -226,6 +226,31 @@
     (is (not (nil? (:db/id (load-siva-from-db)))))
     (is (= 5 (number-of-users-in-datomic)))))
 
+(deftest test-user-has-a-wife-who-has-friends
+  (cleanup-siva)
+  (demonic-testing "can persist siva, wife with a friend, and friend with a friend"
+    (let [harini-graph (assoc HARINI-DB :user/friends [ALEKHYA-DB])
+          amit-graph (-> AMIT-DB
+                         (assoc :user/wife DEEPTHI-DB)
+                         (assoc :user/friends [ADI-DB]))
+          siva-graph (-> SIVA-DB 
+                         (assoc :user/wife harini-graph)
+                         (assoc :user/friends [amit-graph]))]
+      (demonic/insert siva-graph))
+    (let [siva (load-siva-from-db)]
+      (is (not (nil? (:db/id siva))))
+      (is (= (:user/first-name HARINI-DB)
+             (get-in siva [:user/wife :user/first-name])))
+      (is (= (:user/first-name ALEKHYA-DB)
+             (-> siva :user/wife :user/friends first :user/first-name)))
+      (is (= (map :user/first-name [AMIT-DB])
+             (map :user/first-name (:user/friends siva))))
+      (is (= (:user/first-name DEEPTHI-DB)
+             (-> siva :user/friends first :user/wife :user/first-name)))
+      (is (= (:user/first-name ADI-DB)
+             (-> siva :user/friends first :user/friends first :user/first-name))))
+    (is (= 6 (number-of-users-in-datomic)))))
+
 (deftest test-graph-loads
   (cleanup-siva)
   (demonic-testing "can load up siva's graph"
