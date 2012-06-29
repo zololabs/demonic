@@ -17,10 +17,13 @@
        (db/transact CONN)
        deref))
 
-(defrunonce initialize-datomic [datomic-db-name datomic-schema]
+(defn start-it-up- [datomic-db-name datomic-schema]
   (db/create-database datomic-db-name)
   (def CONN (db/connect datomic-db-name))
   (setup-schema datomic-schema))
+
+(defrunonce initialize-datomic [datomic-db-name datomic-schema]
+  (start-it-up- datomic-db-name datomic-schema))
 
 (defn next-temp-id []
   (- (System/currentTimeMillis)))
@@ -42,12 +45,15 @@
   [:db/add (:db/id entity) attrib (map :db/id value-entities)])
 
 (defn run-transaction [tx-data]
-  (swap! TX-DATA concat tx-data)
-  (swap! DATOMIC-DB db/with tx-data))
+  (swap! TX-DATA conj tx-data)
+  (swap! DATOMIC-DB db/with tx-data)
+  ;;@(db/transact CONN tx-data)
+)
 
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
-    @(db/transact CONN @TX-DATA)))
+    (doseq [t @TX-DATA]
+      @(db/transact CONN (eval t)))))
 
 (defn run-in-demarcation [thunk]
   (binding [TX-DATA (atom [])
