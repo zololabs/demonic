@@ -238,6 +238,7 @@
                          (assoc :user/friends [amit-graph]))]
       (demonic/insert siva-graph))
     (let [siva (load-siva-from-db)]
+      (demonic/insert siva) ;;testing re-insertion
       (is (not (nil? (:db/id siva))))
       (is (= (:user/first-name HARINI-DB)
              (get-in siva [:user/wife :user/first-name])))

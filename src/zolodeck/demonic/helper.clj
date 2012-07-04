@@ -46,9 +46,7 @@
 
 (defn run-transaction [tx-data]
   (swap! TX-DATA conj tx-data)
-  (swap! DATOMIC-DB db/with tx-data)
-  ;;@(db/transact CONN tx-data)
-)
+  (swap! DATOMIC-DB db/with tx-data))
 
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
