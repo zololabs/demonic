@@ -33,8 +33,6 @@
 
 (defn insert [a-map]
   (when a-map
-    ;(-> a-map with-demonic-attributes process-ref-attributes
-                                        ;run-transaction)
     (-> a-map process-graph run-transaction))
   a-map)
 
