@@ -38,6 +38,9 @@
 (defn ref-fact-schema [attribute fulltext? doc]
   (fact-schema attribute :db.type/ref :db.cardinality/one fulltext? doc))
 
+(defn enum-value-schema [value]
+   [:db/add #db/id[:db.part/user] :db/ident value])
+
 ;; introspection
 
 (defn is-ref? [attribute]
