@@ -37,7 +37,10 @@
   a-map)
 
 (defn insert-and-transform-with [a-map transform]
-  (-> a-map insert transform))
+  (when a-map
+    (let [p (process-graph a-map)]      
+      (run-transaction p)
+      (transform p))))
 
 (defn append-multiple [entity attrib value-entities]
   (let [with-attribs (map with-demonic-attributes value-entities)
