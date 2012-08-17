@@ -56,13 +56,18 @@
 (defn is-cardinality-one? [attribute]
   (= (cardinality attribute) :db.cardinality/one))
 
+(defn is-attrib-type? [attribute a-type cardinality]
+  (and (= a-type (get-in @SCHEMA-MAP [attribute :db/valueType]))
+       (= cardinality (get-in @SCHEMA-MAP [attribute :db/cardinality]))))
+
+(defn is-long? [attribute]
+  (is-attrib-type? attribute :db.type/long :db.cardinality/one))
+
 (defn is-string? [attribute]
-  (and (= :db.type/string (get-in @SCHEMA-MAP [attribute :db/valueType]))
-       (= :db.cardinality/one (get-in @SCHEMA-MAP [attribute :db/cardinality]))))
+  (is-attrib-type? attribute :db.type/string :db.cardinality/one))
 
 (defn is-strings? [attribute]
-  (and (= :db.type/string (get-in @SCHEMA-MAP [attribute :db/valueType]))
-       (= :db.cardinality/many (get-in @SCHEMA-MAP [attribute :db/cardinality]))))
+  (is-attrib-type? attribute :db.type/string :db.cardinality/many))
 
 (defn is-multiple-ref-attrib? [k]
   (and (is-ref? k) (is-cardinality-many? k)))
