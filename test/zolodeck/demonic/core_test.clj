@@ -86,7 +86,8 @@
                          (assoc :user/callsign :callsign/hawk)
                          (assoc :user/friends [(assoc AMIT-DB :user/callsign :callsign/eagle)])))
     (let [siva (load-siva-from-db)]
-      (is  (= :callsign/hawk (get-in siva [:user/callsign :db/ident]))))))
+      (is (= :callsign/hawk (get-in siva [:user/callsign :db/ident])))
+      (is (= :callsign/eagle (-> siva :user/friends first (get-in [:user/callsign :db/ident])))))))
 
 (deftest test-user-has-a-wife-persistence
   (cleanup-siva)
