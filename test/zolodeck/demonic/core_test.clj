@@ -79,6 +79,15 @@
 
   (cleanup-siva))
 
+(deftest test-enum-type-persistence
+  (cleanup-siva)
+  (demonic-testing "enum types are saved right, and can be read back"
+    (demonic/insert (->  SIVA-DB
+                         (assoc :user/callsign :callsign/hawk)
+                         (assoc :user/friends [(assoc AMIT-DB :user/callsign :callsign/eagle)])))
+    (let [siva (load-siva-from-db)]
+      (is  (= :callsign/hawk (get-in siva [:user/callsign :db/ident]))))))
+
 (deftest test-user-has-a-wife-persistence
   (cleanup-siva)
   (demonic-testing "can persist siva and his wife"

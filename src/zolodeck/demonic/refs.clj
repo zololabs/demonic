@@ -37,9 +37,10 @@
 (defn process-attrib [old-map [attrib value]]
   (let [old-value (attrib old-map)]
     (cond
+     (and (= old-value value) (not= attrib :db/id)) nil
+     (schema/is-enum? attrib) [attrib value]
      (schema/is-single-ref-attrib? attrib) (single-ref-attrib attrib old-value value)
      (schema/is-multiple-ref-attrib? attrib) (multiple-ref-attrib attrib old-value value)
-     (and (= old-value value) (not= attrib :db/id)) nil
      :else [attrib value])))
 
 (defn process-map [a-map]
