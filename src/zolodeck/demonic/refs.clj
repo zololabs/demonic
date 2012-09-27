@@ -1,4 +1,5 @@
 (ns zolodeck.demonic.refs
+  "Takes a graph and converts to a series of datomic operations"
   (:use zolodeck.demonic.loadable
         zolodeck.demonic.helper
         zolodeck.utils.debug
@@ -31,7 +32,7 @@
 (defn- multiple-ref-attrib [attrib old-values new-values]
   (handle-deleted-multiple-refs-attrib old-values new-values)
   (let [db-ids (doall (keep :db/id (map process-map new-values)))]
-    (if-not (empty? db-ids)
+    (when-not (empty? db-ids)
       [attrib db-ids])))
 
 (defn- process-attrib [old-map [attrib value]]
@@ -44,10 +45,10 @@
      :else [attrib value])))
 
 (defn- process-map [a-map]
-  (let [with-attribs (with-demonic-attributes a-map)
+  (let [with-attribs (assoc-demonic-attributes a-map)
         old-map (-> with-attribs :db/id load-from-db)
         obj (apply hash-map (mapcat #(process-attrib old-map %) with-attribs))]
-    (if-not (empty? obj)
+    (when-not (empty? obj)
       (add-child-txn! obj))
     obj))
 
