@@ -50,7 +50,14 @@
       (add-child-txn! obj))
     obj))
 
+(defn actual-changes [child-txn]
+  (cond
+   (map? child-txn) (if (= '(:db/id) (keys child-txn))
+                      nil
+                      child-txn)
+   :else child-txn))
+
 (defn process-graph [a-map]
   (binding [children (atom [])]
     (process-map a-map)
-    @children))
+    (doall (keep actual-changes @children))))

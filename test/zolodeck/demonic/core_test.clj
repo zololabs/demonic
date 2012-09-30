@@ -2,6 +2,7 @@
   (:use [clojure.test :only [run-tests deftest is are testing]]
         [zolodeck.demonic.core :only [init-db in-demarcation run-query delete] :as demonic]
         [zolodeck.demonic.helper :only [DATOMIC-TEST]]
+        [zolodeck.demonic.refs :only [process-graph]]        
         [zolodeck.demonic.test-schema]
         [zolodeck.demonic.test]
         [zolodeck.utils.debug]
@@ -251,6 +252,34 @@
       (is (= (:user/first-name ADI-DB)
              (-> siva :user/friends first :user/friends first :user/first-name))))
     (is (= 6 (number-of-users-in-datomic)))))
+
+;; (demonictest test-subgraphs-can-be-updated-within-a-transaction
+;;   (cleanup-siva)
+;;   (let [siva-graph (assoc SIVA-DB :user/friends [DEEPTHI-DB HARINI-DB])]
+;;     (demonic/insert siva-graph)
+;;     (let [loaded-siva (load-siva-from-db)
+;;           deepthi-graph (-> (-> loaded-siva :user/friends first)
+;;                             (assoc :user/friends [ADI-DB]))
+;;           harini-graph (-> (-> loaded-siva :user/friends last)
+;;                            (assoc :user/friends [ALEKHYA-DB]))
+;;           siva-graph-2 (-> loaded-siva
+;;                            (assoc :user/friends [deepthi-graph harini-graph]))
+;;           ]
+;;       (doall (map demonic/insert [deepthi-graph harini-graph]))
+;;       (let [loaded-siva-2 (load-siva-from-db)]
+;;         (map :user/friends (:user/friends loaded-siva-2))
+;;         (demonic/insert loaded-siva-2)))))
+
+(demonictest test-empty-change-graph-if-no-changes
+  (cleanup-siva)
+  (let [siva-graph (-> SIVA-DB
+                       (assoc :user/wife (assoc HARINI-DB :user/friends [ALEKHYA-DB]))
+                       (assoc :user/friends [(assoc AMIT-DB :user/friends [ADI-DB])
+                                             (assoc DEEPTHI-DB :user/friends [ADI-DB])]))
+        _ (demonic/insert siva-graph)
+        siva-loaded (load-siva-from-db)
+        changes (process-graph siva-loaded)]
+    (print-vals "CHANGES:" changes)))
 
 (deftest test-graph-loads
   (cleanup-siva)

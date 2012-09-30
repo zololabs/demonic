@@ -1,5 +1,6 @@
 (ns zolodeck.demonic.core
   (:use [datomic.api :only [q db] :as db]
+        [zolodeck.utils.clojure :only [defrunonce]]
         zolodeck.demonic.loadable
         zolodeck.demonic.helper        
         zolodeck.demonic.refs
@@ -14,8 +15,8 @@
       (in-demarcation (handler request))
       (handler request))))
 
-(defn init-db [datomic-db-name datomic-schema]
-  (initialize-datomic datomic-db-name datomic-schema))
+(defrunonce init-db [datomic-db-name datomic-schema]
+  (start-it-up- datomic-db-name datomic-schema))
 
 (defn delete-db [datomic-db-name]
   (db/delete-database datomic-db-name))

@@ -51,7 +51,8 @@
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
     (doseq [t @TX-DATA]
-      @(db/transact CONN (doall t)))))
+      (when-not (empty? t)
+        @(db/transact CONN (doall t))))))
 
 (defn run-in-demarcation [thunk]
   (binding [TX-DATA (atom [])
