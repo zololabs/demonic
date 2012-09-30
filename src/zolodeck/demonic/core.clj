@@ -21,6 +21,10 @@
 (defn delete-db [datomic-db-name]
   (db/delete-database datomic-db-name))
 
+(defn reset-db [datomic-db-name datomic-schema]
+  (delete-db datomic-db-name)
+  (start-it-up- datomic-db-name datomic-schema))
+
 (defn run-query [query & extra-inputs]
   (apply q query @DATOMIC-DB extra-inputs))
 
