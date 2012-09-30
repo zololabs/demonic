@@ -4,9 +4,17 @@
 
 (def SCHEMA-MAP (atom {}))
 
+(def SCHEMA-TYPE (atom {}))
+
+(defn add-to-schema-map [attribute schema]
+  (swap! SCHEMA-MAP assoc attribute schema))
+
+(defn add-to-schema-type [attribute enum-type]
+  (swap! SCHEMA-TYPE assoc attribute enum-type))
+
 ;; declaration
 
-(defn fact-schema [attribute value-type cardinality fulltext? doc]
+(defn fact-schema [attribute enum-type value-type cardinality fulltext? doc]
   (let [schema {:db/id (db/tempid :db.part/db)
                 :db/ident attribute
                 :db/valueType value-type
@@ -14,34 +22,42 @@
                 :db/fulltext fulltext?
                 :db/doc doc
                 :db.install/_attribute :db.part/db}]
-    (swap! SCHEMA-MAP assoc attribute schema)
+    ;(swap! SCHEMA-MAP assoc attribute schema)
+    (add-to-schema-map attribute schema)
+    (add-to-schema-type attribute enum-type)
     schema))
 
 (defn string-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute :db.type/string :db.cardinality/one fulltext? doc))
+  (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc))
 
 (defn strings-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute :db.type/string :db.cardinality/many fulltext? doc))
+  (fact-schema attribute false :db.type/string :db.cardinality/many fulltext? doc))
 
 (defn long-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute :db.type/long :db.cardinality/one fulltext? doc))
+  (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc))
 
 (defn instant-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute :db.type/instant :db.cardinality/one fulltext? doc))
+  (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc))
 
 (defn uuid-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute :db.type/uuid :db.cardinality/one fulltext? doc))
+  (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc))
 
 (defn refs-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute :db.type/ref :db.cardinality/many fulltext? doc))
+  (fact-schema attribute false :db.type/ref :db.cardinality/many fulltext? doc))
 
 (defn ref-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute :db.type/ref :db.cardinality/one fulltext? doc))
+  (fact-schema attribute false :db.type/ref :db.cardinality/one fulltext? doc))
+
+(defn enum-fact-schema [attribute fulltext? doc]
+  (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc))
 
 (defn enum-value-schema [value]
-   [:db/add #db/id[:db.part/user] :db/ident value])
+  [:db/add (db/tempid :db.part/user) :db/ident value])
 
 ;; introspection
+
+(defn is-enum? [attribute]
+  (get-in @SCHEMA-TYPE [attribute]))
 
 (defn is-ref? [attribute]
   (-> (get-in @SCHEMA-MAP [attribute :db/valueType])

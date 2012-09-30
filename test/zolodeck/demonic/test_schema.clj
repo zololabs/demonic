@@ -55,7 +55,10 @@
    
    (ref-fact-schema :user/wife false "A user's wife")
    (refs-fact-schema :user/friends false "A users's friends")
-   ])
+
+   (enum-fact-schema :user/callsign false "A user's call-sign")
+   (enum-value-schema :callsign/eagle)
+   (enum-value-schema :callsign/hawk)])
 
 (defn find-by-fb-id [fb-id]
   (when fb-id

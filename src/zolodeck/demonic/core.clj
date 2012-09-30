@@ -44,7 +44,7 @@
       (transform p))))
 
 (defn append-multiple [entity attrib value-entities]
-  (let [with-attribs (map with-demonic-attributes value-entities)
+  (let [with-attribs (map assoc-demonic-attributes value-entities)
         append-txn (append-ref-txn entity attrib with-attribs)]
     (run-transaction (conj with-attribs append-txn))))
 
@@ -52,4 +52,7 @@
   (append-multiple entity attrib [value-entity]))
 
 (defn delete [entity]
-  (-> entity retract-entity-txn vector run-transaction))
+  (-> entity
+      retract-entity-txn
+      vector
+      run-transaction))
