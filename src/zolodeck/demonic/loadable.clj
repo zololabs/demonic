@@ -66,7 +66,7 @@
   (if (is-entity-map? v) (entity->loadable v) v))
 
 (defn to-loadables [values]
-  (if-not (or (nil? values) (zolo-clj/collection? values))
+  (when-not (or (nil? values) (zolo-clj/collection? values))
     (throw+ {:severity :fatal :value values} (str "Expected a collection , received :" (class values))))
   (map to-loadable-if-needed values))
 

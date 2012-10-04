@@ -12,10 +12,7 @@
 (def ^:dynamic DATOMIC-TEST false)
 
 (defn setup-schema [schema-txs]
-  (->> schema-txs
-       (apply vector)
-       (db/transact CONN)
-       deref))
+  @(db/transact CONN (vec schema-txs)))
 
 (defn start-it-up- [datomic-db-name datomic-schema]
   (db/create-database datomic-db-name)
@@ -27,9 +24,6 @@
 
 (defn next-temp-id []
   (- (System/currentTimeMillis)))
-
-(defn get-db []
-  (db/db CONN))
 
 (defn temp-db-id? [eid]
   (map? eid))
@@ -51,11 +45,12 @@
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
     (doseq [t @TX-DATA]
-      @(db/transact CONN (doall t)))))
+      (when-not (empty? t)
+        @(db/transact CONN (doall t))))))
 
 (defn run-in-demarcation [thunk]
   (binding [TX-DATA (atom [])
-            DATOMIC-DB (atom (get-db))]
+            DATOMIC-DB (atom (db/db CONN))]
     (let [res (thunk)]
       (commit-pending-transactions)
       res)))
@@ -69,17 +64,17 @@
   (-> (select-keys e (keys e))
       (assoc :db/id (:db/id e))))
 
-(defn non-db-keys [a-map]
+(defn- non-db-keys [a-map]
   (remove #(= :db/id %) (keys a-map)))
 
 (defn- guid-key [a-map]
   (-> a-map non-db-keys first .getNamespace (str "/guid") keyword))
 
-(defn with-demonic-attributes [a-map]
-  (if a-map
-    (let [gk (guid-key a-map)]
-      (-> a-map
+(defn assoc-demonic-attributes [entity-or-map]
+  (when entity-or-map
+    (let [gk (guid-key entity-or-map)]
+      (-> entity-or-map
           entity->map          
-          (assoc gk (or (gk a-map) (random-guid)))
-          (assoc :db/id (or (:db/id a-map) (db/tempid :db.part/user)))))))
+          (assoc gk (or (gk entity-or-map) (random-guid)))
+          (assoc :db/id (or (:db/id entity-or-map) (db/tempid :db.part/user)))))))
 

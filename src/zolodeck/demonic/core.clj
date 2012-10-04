@@ -1,5 +1,6 @@
 (ns zolodeck.demonic.core
   (:use [datomic.api :only [q db] :as db]
+        [zolodeck.utils.clojure :only [defrunonce]]
         zolodeck.demonic.loadable
         zolodeck.demonic.helper        
         zolodeck.demonic.refs
@@ -14,11 +15,15 @@
       (in-demarcation (handler request))
       (handler request))))
 
-(defn init-db [datomic-db-name datomic-schema]
-  (initialize-datomic datomic-db-name datomic-schema))
+(defrunonce init-db [datomic-db-name datomic-schema]
+  (start-it-up- datomic-db-name datomic-schema))
 
 (defn delete-db [datomic-db-name]
   (db/delete-database datomic-db-name))
+
+(defn reset-db [datomic-db-name datomic-schema]
+  (delete-db datomic-db-name)
+  (start-it-up- datomic-db-name datomic-schema))
 
 (defn run-query [query & extra-inputs]
   (apply q query @DATOMIC-DB extra-inputs))
@@ -43,7 +48,7 @@
       (transform p))))
 
 (defn append-multiple [entity attrib value-entities]
-  (let [with-attribs (map with-demonic-attributes value-entities)
+  (let [with-attribs (map assoc-demonic-attributes value-entities)
         append-txn (append-ref-txn entity attrib with-attribs)]
     (run-transaction (conj with-attribs append-txn))))
 
@@ -51,4 +56,7 @@
   (append-multiple entity attrib [value-entity]))
 
 (defn delete [entity]
-  (-> entity retract-entity-txn vector run-transaction))
+  (-> entity
+      retract-entity-txn
+      vector
+      run-transaction))
