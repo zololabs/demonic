@@ -44,10 +44,13 @@
 
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
-    (doseq [t @TX-DATA]
-      (when-not (empty? t)
-        @(db/transact CONN (doall t))
-        (print-vals "[DEMONIC] transaction set:" t)))))
+    (when-not (empty? @TX-DATA)
+      (print-vals "[DEMONIC] Committing pending transactions:")
+      (doseq [t @TX-DATA]
+        (when-not (empty? t)
+          @(db/transact CONN (doall t))
+          (print-vals "[demonic] Transaction set:" t)))
+      (print-vals "[demonic] ------------------------"))))
 
 (defn run-in-demarcation [thunk]
   (binding [TX-DATA (atom [])
