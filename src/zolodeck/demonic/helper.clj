@@ -46,7 +46,8 @@
   (when-not DATOMIC-TEST
     (doseq [t @TX-DATA]
       (when-not (empty? t)
-        @(db/transact CONN (doall t))))))
+        @(db/transact CONN (doall t))
+        (print-vals "[DEMONIC] transaction set:" t)))))
 
 (defn run-in-demarcation [thunk]
   (binding [TX-DATA (atom [])
