@@ -8,6 +8,11 @@
 
 (declare get-value seq-entry)
 
+(def NIL {:db/id nil})
+
+(defn NIL? [e]
+  (or (nil? e) (= NIL e)))
+
 (deftype Loadable [m]
   clojure.lang.IPersistentMap
   (assoc [this k v] (Loadable. (assoc m k v)))
@@ -54,7 +59,8 @@
   (Loadable. a-map))
 
 (defn entity->loadable [e]
-  (-> e entity->map new-loadable))
+  (if-not (NIL? e)
+    (-> e entity->map new-loadable)))
 
 (defn to-loadable-if-needed [v]
   (if (is-entity-map? v) (entity->loadable v) v))
