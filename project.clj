@@ -3,8 +3,8 @@
 
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [com.datomic/datomic-free "0.8.3524"]
-                 ;[com.datomic/datomic "0.1.3164"]
 
+                 [org.clojure/tools.logging "0.2.4"]
                  [slingshot "0.10.2"]                 
                  [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
 

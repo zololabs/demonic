@@ -53,7 +53,7 @@
       (doseq [t @TX-DATA]
         (when-not (empty? t)
           @(db/transact CONN (doall t))
-          (logger/trace "[demonic] Transaction set:" t)))
+          (logger/trace "[demonic] Transaction set:" (snipped-pretty-string t))))
       (logger/trace "[demonic] ------------------------"))))
 
 (defn run-in-demarcation [thunk]
