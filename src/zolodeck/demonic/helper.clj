@@ -14,9 +14,12 @@
 (defn setup-schema [schema-txs]
   @(db/transact CONN (vec schema-txs)))
 
+(defn setup-connection [datomic-db-name] 
+  (def CONN (db/connect datomic-db-name)))
+
 (defn start-it-up- [datomic-db-name datomic-schema]
   (db/create-database datomic-db-name)
-  (def CONN (db/connect datomic-db-name))
+  (setup-connection datomic-db-name)
   (setup-schema datomic-schema))
 
 (defrunonce initialize-datomic [datomic-db-name datomic-schema]
