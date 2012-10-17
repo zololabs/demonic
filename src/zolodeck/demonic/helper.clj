@@ -4,7 +4,8 @@
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.utils.debug]
         [zolodeck.utils.clojure]
-        [zolodeck.demonic.schema :as schema]))
+        [zolodeck.demonic.schema :as schema])
+  (:require [clojure.tools.logging :as logger]))
 
 (def CONN)
 (def ^:dynamic TX-DATA)
@@ -45,12 +46,12 @@
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
     (when-not (empty? @TX-DATA)
-      (print-vals "[DEMONIC] Committing pending transactions:")
+      (logger/trace "[DEMONIC] Committing pending transactions:")
       (doseq [t @TX-DATA]
         (when-not (empty? t)
           @(db/transact CONN (doall t))
-          (print-vals "[demonic] Transaction set:" t)))
-      (print-vals "[demonic] ------------------------"))))
+          (logger/trace "[demonic] Transaction set:" t)))
+      (logger/trace "[demonic] ------------------------"))))
 
 (defn run-in-demarcation [thunk]
   (binding [TX-DATA (atom [])
