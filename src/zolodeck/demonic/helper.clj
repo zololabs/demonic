@@ -43,8 +43,11 @@
   [:db/add (:db/id entity) attrib (map :db/id value-entities)])
 
 (defn run-transaction [tx-data]
+  (logger/trace "[demonic] run-transaction start, count:" (count tx-data))
   (swap! TX-DATA conj tx-data)
-  (swap! DATOMIC-DB db/with tx-data))
+  (logger/trace "[demonic] run-transactio db/with")
+  (swap! DATOMIC-DB db/with tx-data)
+  (logger/trace "[demonic] run-transaction end"))
 
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
@@ -52,7 +55,7 @@
       (logger/trace "[DEMONIC] Committing pending transactions:")
       (doseq [t @TX-DATA]
         (when-not (empty? t)
-          @(db/transact CONN (doall t))
+          (db/transact-async CONN (doall t))
           (logger/trace "[demonic] Transaction set:" (snipped-pretty-string t))))
       (logger/trace "[demonic] ------------------------"))))
 
