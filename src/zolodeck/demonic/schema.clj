@@ -36,6 +36,9 @@
 (defn long-fact-schema [attribute fulltext? doc]
   (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc))
 
+(defn boolean-fact-schema [attribute fulltext? doc]
+  (fact-schema attribute false :db.type/boolean :db.cardinality/one fulltext? doc))
+
 (defn instant-fact-schema [attribute fulltext? doc]
   (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc))
 
