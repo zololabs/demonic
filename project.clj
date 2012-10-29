@@ -6,7 +6,8 @@
                  ;[com.datomic/datomic "0.1.3164"]
 
                  [slingshot "0.10.2"]                 
-                 [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]]
+                 [zolodeck/zolo-utils "0.1.0-SNAPSHOT"]
+                 [org.clojure/tools.logging "0.2.4"]]
 
   :plugins [[lein-swank "1.4.4"]
             [lein-pprint "1.1.1"]

@@ -6,7 +6,7 @@
             [zolodeck.demonic.schema :as schema]
             [zolodeck.utils.clojure :as zolo-clj]))
 
-(declare get-value seq-entry)
+(declare get-value seq-entry is-loadable?)
 
 (def NIL {:db/id nil})
 
@@ -26,7 +26,7 @@
   (cons [this o]
         (Loadable. (merge m o)))
   (equiv [self o]
-    (= m o))
+    (= m (.m o)))
 
   clojure.lang.Counted
   (count [this]
@@ -49,9 +49,15 @@
 
   Object
   (equals [self o]
-    (= self o))
+    (print-vals "EQUALS checking...")
+    (and (is-loadable? self)
+         (is-loadable? o)
+         (= m (.m o))))
   (hashCode [self]
     (.hashCode m)))
+
+(defn is-loadable? [o]
+  (instance? Loadable o))
 
 (defn new-loadable [a-map]
   (if (is-entity-map? a-map)
