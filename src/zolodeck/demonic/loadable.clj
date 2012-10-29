@@ -26,7 +26,9 @@
   (cons [this o]
         (Loadable. (merge m o)))
   (equiv [self o]
-    (= m (.m o)))
+    (and (is-loadable? self)
+         (is-loadable? o)
+         (= m (.m o))))
 
   clojure.lang.Counted
   (count [this]
