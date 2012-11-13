@@ -41,6 +41,10 @@
 (defn append-ref-txn [entity attrib value-entities]
   [:db/add (:db/id entity) attrib (map :db/id value-entities)])
 
+(defn- datomic-transact [txns]
+  (let [tf (db/transact-async CONN txns)]
+    @tf))
+
 (defn run-transaction [tx-data]
   (swap! TX-DATA conj tx-data)
   (swap! DATOMIC-DB db/with tx-data))
@@ -50,7 +54,7 @@
     (when-not (empty? @TX-DATA)
       (doseq [t @TX-DATA]
         (when-not (empty? t)
-          (db/transact-async CONN (doall t)))))))
+          (datomic-transact (doall t)))))))
 
 (defn run-in-demarcation [thunk]
   (binding [TX-DATA (atom [])
