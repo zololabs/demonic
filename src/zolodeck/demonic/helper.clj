@@ -3,8 +3,7 @@
         [zolodeck.utils.clojure :only [defrunonce random-guid diff]]
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.utils.debug]
-        [zolodeck.utils.clojure]
-        [zolodeck.demonic.schema :as schema])
+        [zolodeck.utils.clojure])
   (:require [clojure.tools.logging :as logger]))
 
 (def CONN)

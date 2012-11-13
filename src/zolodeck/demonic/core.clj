@@ -1,5 +1,5 @@
 (ns zolodeck.demonic.core
-  (:use [datomic.api :only [q db] :as db]
+  (:use [datomic.api :only [q db tx-report-queue] :as db]
         [zolodeck.utils.clojure :only [defrunonce]]
         zolodeck.demonic.loadable
         zolodeck.demonic.helper        
@@ -27,6 +27,9 @@
 
 (defn run-query [query & extra-inputs]
   (apply q query @DATOMIC-DB extra-inputs))
+
+(defn run-raw-query [query & sources]
+  (apply q query sources))
 
 (defn load-entity [eid]
   (let [e (load-from-db eid)]
@@ -60,3 +63,11 @@
       retract-entity-txn
       vector
       run-transaction))
+
+(defn transactions-report-queue []
+  (db/tx-report-queue CONN))
+
+(defn schema-attrib-id [attrib-name]
+  (-> '[:find ?e :in $ ?a :where [?e :db/ident ?a]]
+      (run-query attrib-name)
+      ffirst))
