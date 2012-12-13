@@ -45,9 +45,14 @@
   (let [tf (db/transact-async CONN txns)]
     @tf))
 
+(defn speculative-transact [db txns]
+  (-> db
+      (db/with txns)
+      :db-after))
+
 (defn run-transaction [tx-data]
   (swap! TX-DATA conj tx-data)
-  (swap! DATOMIC-DB db/with tx-data))
+  (swap! DATOMIC-DB speculative-transact tx-data))
 
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST

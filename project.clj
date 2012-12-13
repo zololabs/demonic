@@ -2,7 +2,8 @@
   :description "Datomic helper for testing and batch commits"
 
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [com.datomic/datomic-free "0.8.3524"]
+                 [com.datomic/datomic-free "0.8.3646"]
+                 ;[com.datomic/datomic "0.8.3646"]
 
                  [org.clojure/tools.logging "0.2.4"]
                  [slingshot "0.10.2"]                 
@@ -28,7 +29,4 @@
                    :all (fn [t] true)}
 
   :project-init (do (use 'clojure.pprint)
-                    (use 'clojure.test))
-  
-  ;:repositories {"local" ~(str (.toURI (java.io.File. "./mvn_repo")))}
-  )
+                    (use 'clojure.test)))
