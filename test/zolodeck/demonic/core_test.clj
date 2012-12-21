@@ -80,6 +80,16 @@
 
   (cleanup-siva))
 
+(deftest test-retract-attribute
+  (cleanup-siva)
+  (demonic-testing "can delete a simple attrib"
+    (demonic/insert SIVA-DB)
+    (let [siva (load-siva-from-db)]
+      (is (= (:user/fb-link SIVA-DB) (:user/fb-link siva)))
+      (demonic/retract siva :user/fb-link (:user/fb-link siva))
+      (let [siva-reloaded (load-siva-from-db)]
+        (is (nil? (:user/fb-link siva-reloaded)))))))
+
 (deftest test-enum-type-persistence
   (cleanup-siva)
   (demonic-testing "enum types are saved right, and can be read back"

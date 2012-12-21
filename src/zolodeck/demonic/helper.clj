@@ -1,5 +1,6 @@
 (ns zolodeck.demonic.helper
   (:use [datomic.api :only [q db tempid] :as db]
+        [zolodeck.demonic.schema :as schema]
         [zolodeck.utils.clojure :only [defrunonce random-guid diff]]
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.utils.debug]
@@ -34,6 +35,13 @@
 (defn load-from-db [eid]
   (if (and eid (not (temp-db-id? eid)))
     (db/entity @DATOMIC-DB eid)))
+
+(defn retract-attribute-txn [entity attrib value-or-values]
+  (let [value (cond
+               (schema/is-single-ref-attrib? attrib) (:db/id value-or-values)
+               (schema/is-multiple-ref-attrib? attrib) (map :db/id value-or-values)
+               :else value-or-values)]
+    [:db/retract (:db/id entity) attrib value]))
 
 (defn retract-entity-txn [entity]
   [:db.fn/retractEntity (:db/id entity)])
