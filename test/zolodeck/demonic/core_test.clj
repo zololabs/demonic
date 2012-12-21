@@ -86,7 +86,7 @@
     (demonic/insert SIVA-DB)
     (let [siva (load-siva-from-db)]
       (is (= (:user/fb-link SIVA-DB) (:user/fb-link siva)))
-      (demonic/retract siva :user/fb-link (:user/fb-link siva))
+      (demonic/retract siva :user/fb-link)
       (let [siva-reloaded (load-siva-from-db)]
         (is (nil? (:user/fb-link siva-reloaded)))))))
 

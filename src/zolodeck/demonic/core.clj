@@ -58,10 +58,11 @@
 (defn append-single [entity attrib value-entity]
   (append-multiple entity attrib [value-entity]))
 
-(defn retract [entity attrib value]
-  (-> (retract-attribute-txn entity attrib value)
-      vector
-      run-transaction))
+(defn retract [entity attrib]
+  (->> (entity attrib)
+       (retract-attribute-txn entity attrib)
+       vector
+       run-transaction))
 
 (defn delete [entity]
   (-> entity
