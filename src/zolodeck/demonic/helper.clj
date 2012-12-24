@@ -39,7 +39,12 @@
 (defn retract-attribute-txn [entity attrib value-or-values]
   (let [value (cond
                (schema/is-single-ref-attrib? attrib) (:db/id value-or-values)
-               (schema/is-multiple-ref-attrib? attrib) (map :db/id value-or-values)
+               (and 
+                (schema/is-multiple-ref-attrib? attrib)
+                (sequential? value-or-values)) (map :db/id value-or-values)
+                (and
+                 (schema/is-multiple-ref-attrib? attrib)
+                 (not (sequential? value-or-values))) (:db/id value-or-values)
                :else value-or-values)]
     [:db/retract (:db/id entity) attrib value]))
 

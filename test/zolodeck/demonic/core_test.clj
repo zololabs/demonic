@@ -80,15 +80,27 @@
 
   (cleanup-siva))
 
-(deftest test-retract-attribute
+(deftest test-retract-attribute-entirely
   (cleanup-siva)
   (demonic-testing "can delete a simple attrib"
-    (demonic/insert SIVA-DB)
+    (demonic/insert (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB]))
     (let [siva (load-siva-from-db)]
       (is (= (:user/fb-link SIVA-DB) (:user/fb-link siva)))
       (demonic/retract siva :user/fb-link)
+      (demonic/retract siva :user/friends (:user/friends siva))
       (let [siva-reloaded (load-siva-from-db)]
-        (is (nil? (:user/fb-link siva-reloaded)))))))
+        (is (nil? (:user/fb-link siva-reloaded)))
+        (is (nil? (:user/friends siva-reloaded)))))))
+
+(deftest test-retract-one-of-many
+  (cleanup-siva)
+  (demonic-testing "can delete on of a many cardinality attribute"
+    (demonic/insert (assoc SIVA-DB :user/friends [AMIT-DB DEEPTHI-DB]))
+    (let [siva (load-siva-from-db)]
+      (is (= 2 (count (:user/friends siva))))
+      (demonic/retract siva :user/friends (first (:user/friends siva)))
+      (let [siva-reloaded (load-siva-from-db)]
+        (is (= 1 (count (:user/friends siva-reloaded))))))))
 
 (deftest test-enum-type-persistence
   (cleanup-siva)
