@@ -1,5 +1,5 @@
 (ns zolodeck.demonic.helper
-  (:use [datomic.api :only [q db tempid squuid] :as db]
+  (:use [datomic.api :only [q db tempid] :as db]
         [zolodeck.demonic.schema :as schema]
         [zolodeck.utils.clojure :only [defrunonce random-guid diff]]
         [zolodeck.utils.maps :only [select-keys-if] :as maps]
@@ -101,6 +101,6 @@
     (let [gk (guid-key entity-or-map)]
       (-> entity-or-map
           entity->map          
-          (assoc gk (or (gk entity-or-map) (db/squuid)))
+          (assoc gk (or (gk entity-or-map) (random-guid)))
           (assoc :db/id (or (:db/id entity-or-map) (db/tempid :db.part/user)))))))
 
