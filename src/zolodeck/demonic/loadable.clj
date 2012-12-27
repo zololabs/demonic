@@ -41,8 +41,8 @@
     (get-value m k v))
   
   clojure.lang.Seqable
-  (seq [this] (map seq-entry m))
-  ;(seq [this] (seq m))
+  ;(seq [this] (map seq-entry m))
+  (seq [this] (seq m))
   
   clojure.lang.IFn
   (invoke [this] this)
