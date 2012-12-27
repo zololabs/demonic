@@ -255,9 +255,12 @@
     (let [deepthi-graph (assoc DEEPTHI-DB :user/friends [ADI-DB ALEKHYA-DB])
           siva-graph (-> SIVA-DB 
                          (assoc :user/friends [AMIT-DB deepthi-graph]))]
-      (demonic/insert siva-graph))     
-    (is (not (nil? (:db/id (load-siva-from-db)))))
-    (is (= 5 (number-of-users-in-datomic)))))
+      (demonic/insert siva-graph))
+    (let [siva-reloaded (load-siva-from-db)]
+      (is (not (nil? (:db/id siva-reloaded))))
+      (is (= 5 (number-of-users-in-datomic)))
+      (let [deepthi-reloaded (-> siva-reloaded :user/friends second)]
+        (demonic/insert (assoc deepthi-reloaded :user/gender "female"))))))
 
 (deftest test-user-has-a-wife-who-has-friends
   (cleanup-siva)
@@ -285,22 +288,22 @@
              (-> siva :user/friends first :user/friends first :user/first-name))))
     (is (= 6 (number-of-users-in-datomic)))))
 
-;; (demonictest test-subgraphs-can-be-updated-within-a-transaction
-;;   (cleanup-siva)
-;;   (let [siva-graph (assoc SIVA-DB :user/friends [DEEPTHI-DB HARINI-DB])]
-;;     (demonic/insert siva-graph)
-;;     (let [loaded-siva (load-siva-from-db)
-;;           deepthi-graph (-> (-> loaded-siva :user/friends first)
-;;                             (assoc :user/friends [ADI-DB]))
-;;           harini-graph (-> (-> loaded-siva :user/friends last)
-;;                            (assoc :user/friends [ALEKHYA-DB]))
-;;           siva-graph-2 (-> loaded-siva
-;;                            (assoc :user/friends [deepthi-graph harini-graph]))
-;;           ]
-;;       (doall (map demonic/insert [deepthi-graph harini-graph]))
-;;       (let [loaded-siva-2 (load-siva-from-db)]
-;;         (map :user/friends (:user/friends loaded-siva-2))
-;;         (demonic/insert loaded-siva-2)))))
+(demonictest test-subgraphs-can-be-updated-within-a-transaction
+  (cleanup-siva)
+  (let [siva-graph (assoc SIVA-DB :user/friends [DEEPTHI-DB HARINI-DB])]
+    (demonic/insert siva-graph)
+    (let [loaded-siva (load-siva-from-db)
+          deepthi-graph (-> (-> loaded-siva :user/friends first)
+                            (assoc :user/friends [ADI-DB]))
+          harini-graph (-> (-> loaded-siva :user/friends last)
+                           (assoc :user/friends [ALEKHYA-DB]))
+          ;; siva-graph-2 (-> loaded-siva
+          ;;                  (assoc :user/friends [deepthi-graph harini-graph]))
+          ]
+      (doall (map demonic/insert [deepthi-graph harini-graph]))
+      (let [loaded-siva-2 (load-siva-from-db)]
+        (map :user/friends (:user/friends loaded-siva-2))
+        (demonic/insert loaded-siva-2)))))
 
 (demonictest test-empty-change-graph-if-no-changes
   (cleanup-siva)
