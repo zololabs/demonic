@@ -1,5 +1,5 @@
 (ns zolodeck.demonic.core
-  (:use [datomic.api :only [q db tx-report-queue] :as db]
+  (:use [datomic.api :only [q db tx-report-queue history as-of entity] :as db]
         [zolodeck.utils.clojure :only [defrunonce]]
         zolodeck.demonic.loadable
         zolodeck.demonic.helper        
@@ -79,3 +79,15 @@
   (-> '[:find ?e :in $ ?a :where [?e :db/ident ?a]]
       (run-query attrib-name)
       ffirst))
+
+(defn versions
+  "entity: e for which all versions are needed, attrib-that-changed based on which you want the versions, other-attribs-desired in the result-set, nil if all are required"
+  ([entity attrib-that-changed & other-attribs-needed]
+     (let [e (:db/id entity)
+           required-keys (concat other-attribs-needed [:db/id attrib-that-changed])
+           txes (q '[:find ?tx :in $ ?e ?a :where [?e ?a _ ?tx]] (db/history @DATOMIC-DB) e attrib-that-changed)
+           entities (mapv #(db/entity (db/as-of @DATOMIC-DB (first %)) e) (sort txes))
+           entities (if (empty? other-attribs-needed)
+                      entities
+                      (mapv #(select-keys % required-keys) entities))]
+       (mapv entity->loadable entities))))
