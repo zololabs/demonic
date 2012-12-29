@@ -55,17 +55,39 @@
   [:db/add (:db/id entity) attrib (map :db/id value-entities)])
 
 (defn- datomic-transact [txns]
-  (let [tf (db/transact-async CONN txns)]
-    @tf))
+  (print-vals "********** COMMIT: txns:" txns)
+  (try-catch
+   (let [tf (db/transact-async CONN txns)]
+     (print-vals "TF-RESULT:"@tf))))
 
-(defn speculative-transact [db txns]
-  (-> db
-      (db/with txns)
-      :db-after))
+;; (defn speculative-transact [db txns]
+;;   (-> db
+;;       (db/with txns)
+;;       :db-after))
 
-(defn run-transaction [tx-data]
-  (swap! TX-DATA conj tx-data)
-  (swap! DATOMIC-DB speculative-transact tx-data))
+;; (defn run-transaction [tx-data]
+;;   (swap! TX-DATA conj tx-data)
+;;   (swap! DATOMIC-DB speculative-transact tx-data))
+
+(defn schema-attrib-name [attrib-id]
+  (-> '[:find ?a :in $ ?e :where [?e :db/ident ?a]]
+      (q @DATOMIC-DB attrib-id)
+      ffirst))
+
+(defn tx-data-from-datoms [tx-datoms]
+  (map #(vector (if (.added %) :db/add :db/retract)
+                (.e %)
+                (schema-attrib-name (.a %))
+                (.v %)) tx-datoms))
+
+(defn run-transaction [my-tx-data]
+  (let [{:keys [tx-data db-after]} (db/with @DATOMIC-DB my-tx-data)
+        tx-data (->> tx-data tx-data-from-datoms (remove (fn [[_ _ a _ _]] (= :db/txInstant a)))
+                     )]
+    (print-vals "MY-TX-DATA:" my-tx-data)
+    (print-vals "TX-DATA:" tx-data)
+    (swap! TX-DATA conj tx-data)
+    (reset! DATOMIC-DB db-after)))
 
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
