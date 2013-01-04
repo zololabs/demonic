@@ -80,13 +80,25 @@
                 (schema-attrib-name (.a %))
                 (.v %)) tx-datoms))
 
+(defn- exists? [eid]
+  (not (= '(:db/id) (keys (db/entity @DATOMIC-DB eid)))))
+
+(defn replace-with-tempids-if-needed
+  ([mappings tx-data]
+     (reduce (fn [m [o e a v :as t]] (if (exists? e) t [o ]))))
+  ([tx-data]
+     (replace-with-tempids-if-needed {} tx-data)))
+
 (defn run-transaction [my-tx-data]
   (let [{:keys [tx-data db-after]} (db/with @DATOMIC-DB my-tx-data)
-        tx-data (->> tx-data tx-data-from-datoms (remove (fn [[_ _ a _ _]] (= :db/txInstant a)))
+        tx-data (->> tx-data
+                     tx-data-from-datoms
+                     (remove (fn [[_ _ a _ ]] (= :db/txInstant a)))
+                     replace-with-tempids-if-needed
                      )]
     (print-vals "MY-TX-DATA:" my-tx-data)
     (print-vals "TX-DATA:" tx-data)
-    (swap! TX-DATA conj tx-data)
+    (swap! TX-DATA concat tx-data)
     (reset! DATOMIC-DB db-after)))
 
 (defn commit-pending-transactions []
