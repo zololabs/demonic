@@ -104,3 +104,7 @@
           (assoc gk (or (gk entity-or-map) (db/squuid)))
           (assoc :db/id (or (:db/id entity-or-map) (db/tempid :db.part/user)))))))
 
+(defn schema-attrib-name [attrib-id]
+  (-> '[:find ?a :in $ ?e :where [?e :db/ident ?a]]
+      (q @DATOMIC-DB attrib-id)
+      ffirst))
