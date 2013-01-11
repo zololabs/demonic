@@ -14,45 +14,47 @@
 
 ;; declaration
 
-(defn fact-schema [attribute enum-type value-type cardinality fulltext? doc]
+(defn fact-schema [attribute enum-type value-type cardinality fulltext? doc is-component? no-history?]
   (let [schema {:db/id (db/tempid :db.part/db)
                 :db/ident attribute
                 :db/valueType value-type
                 :db/cardinality cardinality
                 :db/fulltext fulltext?
                 :db/doc doc
-                :db.install/_attribute :db.part/db}]
+                :db.install/_attribute :db.part/db
+                :db/isComponent is-component?
+                :db/noHistory no-history?}]
     ;(swap! SCHEMA-MAP assoc attribute schema)
     (add-to-schema-map attribute schema)
     (add-to-schema-type attribute enum-type)
     schema))
 
-(defn string-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc))
+(defn string-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc is-component? no-history?))
 
-(defn strings-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute false :db.type/string :db.cardinality/many fulltext? doc))
+(defn strings-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute false :db.type/string :db.cardinality/many fulltext? doc is-component? no-history?))
 
-(defn long-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc))
+(defn long-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc is-component? no-history?))
 
-(defn boolean-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute false :db.type/boolean :db.cardinality/one fulltext? doc))
+(defn boolean-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute false :db.type/boolean :db.cardinality/one fulltext? doc is-component? no-history?))
 
-(defn instant-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc))
+(defn instant-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc is-component? no-history?))
 
-(defn uuid-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc))
+(defn uuid-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc is-component? no-history?))
 
-(defn refs-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute false :db.type/ref :db.cardinality/many fulltext? doc))
+(defn refs-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute false :db.type/ref :db.cardinality/many fulltext? doc is-component? no-history?))
 
-(defn ref-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute false :db.type/ref :db.cardinality/one fulltext? doc))
+(defn ref-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute false :db.type/ref :db.cardinality/one fulltext? doc is-component? no-history?))
 
-(defn enum-fact-schema [attribute fulltext? doc]
-  (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc))
+(defn enum-fact-schema [attribute fulltext? doc is-component? no-history?]
+  (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc is-component? no-history?))
 
 (defn enum-value-schema [value]
   [:db/add (db/tempid :db.part/user) :db/ident value])

@@ -40,23 +40,23 @@
                  :user/last-name "Jagadeesan"})
 
 (def TEST-SCHEMA-TX [
-   (uuid-fact-schema :user/guid false "A GUID for the user")
-   (string-fact-schema :user/first-name true "A user's first name") 
-   (string-fact-schema :user/last-name true "A user's last name") 
-   (string-fact-schema :user/gender false "A user's gender") 
-   (string-fact-schema :user/fb-id false "A user's Facebook ID") 
-   (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token")
-   (string-fact-schema :user/fb-email false "A user's Facebook email") 
-   (string-fact-schema :user/fb-link false "A user's Facebook link") 
-   (string-fact-schema :user/fb-username false "A user's Facebook username")
+   (uuid-fact-schema :user/guid false "A GUID for the user" false false)
+   (string-fact-schema :user/first-name true "A user's first name" false false) 
+   (string-fact-schema :user/last-name true "A user's last name" false false) 
+   (string-fact-schema :user/gender false "A user's gender" false false) 
+   (string-fact-schema :user/fb-id false "A user's Facebook ID" false false) 
+   (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token" false false)
+   (string-fact-schema :user/fb-email false "A user's Facebook email" false false) 
+   (string-fact-schema :user/fb-link false "A user's Facebook link" false false) 
+   (string-fact-schema :user/fb-username false "A user's Facebook username" false false)
    
-   (string-fact-schema :friend/first-name true "Friend's first name")
-   (string-fact-schema :friend/last-name true "Friend's first name")
+   (string-fact-schema :friend/first-name true "Friend's first name" false false)
+   (string-fact-schema :friend/last-name true "Friend's first name" false false)
    
-   (ref-fact-schema :user/wife false "A user's wife")
-   (refs-fact-schema :user/friends false "A users's friends")
+   (ref-fact-schema :user/wife false "A user's wife" false false)
+   (refs-fact-schema :user/friends false "A users's friends" false false)
 
-   (enum-fact-schema :user/callsign false "A user's call-sign")
+   (enum-fact-schema :user/callsign false "A user's call-sign" false false)
    (enum-value-schema :callsign/eagle)
    (enum-value-schema :callsign/hawk)])
 
