@@ -2,6 +2,7 @@
 *#*
 lib/*
 classes/*
+target/*
 .clojure.conf
 .classpath
 .project
@@ -15,3 +16,4 @@ log/*
 *flymake.js
 
 pom.xml
+/demonic-0.1.0-SNAPSHOT.jar

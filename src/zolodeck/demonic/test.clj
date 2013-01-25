@@ -19,6 +19,3 @@
 (defn re-initialize-db [datomic-db-name datomic-schema]
   (db/delete-database datomic-db-name)
   (start-it-up- datomic-db-name datomic-schema))
-
-(defmacro demonic-integration [& body]
-  )
