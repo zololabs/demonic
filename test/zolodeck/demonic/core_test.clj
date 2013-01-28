@@ -332,6 +332,26 @@
       (is (= "Jag" (:user/last-name (first changes))))
       (is (= (:db/id (:user/wife siva-loaded)) (:db/id (first changes)))))))
 
+(demonictest test-child-single-ref-removal
+  (testing "Siva before he got married ( bad times )"
+    (cleanup-siva)
+    (let [siva-graph (-> SIVA-DB
+                         (assoc :user/wife (assoc HARINI-DB :user/friends [ALEKHYA-DB]))
+                         (assoc :user/friends [(assoc AMIT-DB :user/friends [ADI-DB])
+                                               (assoc DEEPTHI-DB :user/friends [ADI-DB])]))
+          _ (demonic/insert siva-graph)
+          siva-after-marriage (load-siva-from-db)
+          siva-loaded (-> siva-after-marriage
+                          (assoc :user/wife nil))
+          changes (process-graph siva-loaded)]
+      
+      (is (= 1 (count changes)))
+      
+      (demonic/insert siva-loaded)
+      (let [siva-before-marriage (load-siva-from-db)]
+        (is (not (nil? (:user/wife siva-after-marriage))))
+        (is (nil? (:user/wife siva-before-marriage)))))))
+
 (demonictest test-child-multi-refs-attrib-change
   (testing "Friend changes last name should have changeset"
     (cleanup-siva)

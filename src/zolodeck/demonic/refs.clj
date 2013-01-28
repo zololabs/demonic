@@ -38,8 +38,7 @@
      (nil? old-values) [attrib db-ids]     
      (some temp-db-id? db-ids) [attrib db-ids]
      (= (sort (map :db/id old-values)) (sort db-ids)) nil
-     :else [attrib db-ids]
-     )))
+     :else [attrib db-ids])))
 
 (defn- process-attrib [old-map [attrib value]]
   (let [old-value (attrib old-map)]

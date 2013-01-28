@@ -10,8 +10,7 @@
                  [org.clojure/tools.logging "0.2.4"]]
 
   :plugins [[lein-swank "1.4.4"]
-            [lein-pprint "1.1.1"]
-            [lein-notes "0.0.1"]]
+            [lein-pprint "1.1.1"]]
 
   :dev-dependencies [[clj-stacktrace "0.2.4"]
                      [swank-clojure "1.3.3"]]
