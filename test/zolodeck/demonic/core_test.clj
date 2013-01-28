@@ -314,7 +314,40 @@
         _ (demonic/insert siva-graph)
         siva-loaded (load-siva-from-db)
         changes (process-graph siva-loaded)]
-    (print-vals "CHANGES:" changes)))
+    (is (empty? changes) "Should not have any change sets")))
+
+(demonictest test-child-single-ref-attrib-change
+  (testing "Wife changes her last name should have changeset"
+    (cleanup-siva)
+    (let [siva-graph (-> SIVA-DB
+                         (assoc :user/wife (assoc HARINI-DB :user/friends [ALEKHYA-DB]))
+                         (assoc :user/friends [(assoc AMIT-DB :user/friends [ADI-DB])
+                                               (assoc DEEPTHI-DB :user/friends [ADI-DB])]))
+          _ (demonic/insert siva-graph)
+          siva-loaded (load-siva-from-db)
+          siva-loaded (-> siva-loaded
+                          (assoc :user/wife (assoc (:user/wife siva-loaded) :user/last-name "Jag")))
+          changes (process-graph siva-loaded)]
+      (is (= 1 (count changes)))
+      (is (= "Jag" (:user/last-name (first changes))))
+      (is (= (:db/id (:user/wife siva-loaded)) (:db/id (first changes)))))))
+
+(demonictest test-child-multi-refs-attrib-change
+  (testing "Friend changes last name should have changeset"
+    (cleanup-siva)
+    (let [siva-graph (-> SIVA-DB
+                         (assoc :user/wife (assoc HARINI-DB :user/friends [ALEKHYA-DB]))
+                         (assoc :user/friends [(assoc AMIT-DB :user/friends [ADI-DB])
+                                               (assoc DEEPTHI-DB :user/friends [ADI-DB])]))
+          _ (demonic/insert siva-graph)
+          siva-loaded (load-siva-from-db)
+          siva-loaded (-> siva-loaded
+                          (assoc :user/friends
+                            [ (assoc (first (:user/friends siva-loaded)) :user/last-name "Rathore2")
+                              (second (:user/friends siva-loaded))]))
+          changes (process-graph siva-loaded)]
+      (is (= 1 (count changes)))
+      (is (= "Rathore2" (:user/last-name (first changes)))))))
 
 (deftest test-graph-loads
   (cleanup-siva)

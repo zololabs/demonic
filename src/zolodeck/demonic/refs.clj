@@ -21,9 +21,10 @@
 
 (defn- single-ref-attrib [attrib old-value new-value]
   (cond
-   (= old-value new-value) nil
    (nil? new-value) (add-child-txn! (retract-entity-txn old-value))
-   :else [attrib (:db/id (process-map new-value))]))
+   (nil? old-value) [attrib (:db/id (process-map new-value))]
+   (= (:db/id old-value) (:db/id new-value)) (do (process-map new-value) nil)
+   :else-new-value-and-attrib-changed [attrib (:db/id (process-map new-value))]))
 
 (defn- handle-deleted-multiple-refs-attrib [old-values new-values]
   (let [deleted (:deleted (diff old-values new-values :db/id))]
@@ -32,8 +33,13 @@
 (defn- multiple-ref-attrib [attrib old-values new-values]
   (handle-deleted-multiple-refs-attrib old-values new-values)
   (let [db-ids (doall (keep :db/id (map process-map new-values)))]
-    (when-not (empty? db-ids)
-      [attrib db-ids])))
+    (cond
+     (empty? db-ids) nil
+     (nil? old-values) [attrib db-ids]     
+     (some temp-db-id? db-ids) [attrib db-ids]
+     (= (sort (map :db/id old-values)) (sort db-ids)) nil
+     :else [attrib db-ids]
+     )))
 
 (defn- process-attrib [old-map [attrib value]]
   (let [old-value (attrib old-map)]
