@@ -194,13 +194,13 @@
             _ (demonic/insert siva-graph)
             siva-reloaded (load-siva-from-db)]
         (is (= 1 (count (:user/friends siva-reloaded))))
-        (is (= 2 (number-of-users-in-datomic)))
+        (is (= 3 (number-of-users-in-datomic)))
 
         (let [siva-graph (assoc siva-loaded :user/friends nil)
               _ (demonic/insert siva-graph)
               siva-reloaded (load-siva-from-db)]
           (is (empty? (:user/friends siva-reloaded)))
-          (is (= 1 (number-of-users-in-datomic))))))))
+          (is (= 3 (number-of-users-in-datomic))))))))
 
 (deftest test-user-has-friends-replacement
   (cleanup-siva)
@@ -214,12 +214,12 @@
       (let [siva-graph (assoc siva-loaded :user/friends [ADI-DB ALEKHYA-DB])
             _ (demonic/insert siva-graph)
             siva-reloaded (load-siva-from-db)]
-        (is (nil? (:db/id (find-by-first-name (:user/first-name AMIT-DB)))))
-        (is (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB)))))
+        (is (not (nil? (:db/id (find-by-first-name (:user/first-name AMIT-DB))))))
+        (is (not (nil? (:db/id (find-by-first-name (:user/first-name DEEPTHI-DB))))))
         (is (not (nil? (:db/id (find-by-first-name (:user/first-name ADI-DB))))))
         (is (not (nil? (:db/id (find-by-first-name (:user/first-name ALEKHYA-DB))))))
         (is (= 2 (count (:user/friends siva-reloaded))))
-        (is (= 3 (number-of-users-in-datomic)))))))
+        (is (= 5 (number-of-users-in-datomic)))))))
 
 (deftest test-user-has-a-wife-and-friends-persistence
   (cleanup-siva)

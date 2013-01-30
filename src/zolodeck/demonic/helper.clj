@@ -37,16 +37,17 @@
     (db/entity @DATOMIC-DB eid)))
 
 (defn retract-attribute-txn [entity attrib value-or-values]
-  (let [value (cond
-               (schema/is-single-ref-attrib? attrib) (:db/id value-or-values)
-               (and 
-                (schema/is-multiple-ref-attrib? attrib)
-                (sequential? value-or-values)) (map :db/id value-or-values)
-                (and
-                 (schema/is-multiple-ref-attrib? attrib)
-                 (not (sequential? value-or-values))) (:db/id value-or-values)
-               :else value-or-values)]
-    [:db/retract (:db/id entity) attrib value]))
+  (when (:db/id entity)
+    (let [value (cond
+                 (schema/is-single-ref-attrib? attrib) (:db/id value-or-values)
+                 (and 
+                  (schema/is-multiple-ref-attrib? attrib)
+                  (sequential? value-or-values)) (map :db/id value-or-values)
+                  (and
+                   (schema/is-multiple-ref-attrib? attrib)
+                   (not (sequential? value-or-values))) (:db/id value-or-values)
+                   :else value-or-values)]
+      [:db/retract (:db/id entity) attrib value])))
 
 (defn retract-entity-txn [entity]
   [:db.fn/retractEntity (:db/id entity)])

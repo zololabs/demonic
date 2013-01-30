@@ -19,19 +19,21 @@
   (swap! children concat txns)
   nil)
 
-(defn- single-ref-attrib [attrib old-value new-value]
+(defn- single-ref-attrib [entity attrib old-value new-value]
   (cond
-   (nil? new-value) (add-child-txn! (retract-entity-txn old-value))
+   (nil? new-value) (when (:db/id entity)
+                      (add-child-txn! (retract-attribute-txn entity attrib old-value)))
    (nil? old-value) [attrib (:db/id (process-map new-value))]
    (= (:db/id old-value) (:db/id new-value)) (do (process-map new-value) nil)
    :else-new-value-and-attrib-changed [attrib (:db/id (process-map new-value))]))
 
-(defn- handle-deleted-multiple-refs-attrib [old-values new-values]
+(defn- handle-deleted-multiple-refs-attrib [entity attrib old-values new-values]
   (let [deleted (:deleted (diff old-values new-values :db/id))]
-    (add-children-txns! (map retract-entity-txn deleted))))
+    (when-not (empty? deleted)
+      (add-child-txn! (retract-attribute-txn entity attrib deleted)))))
 
-(defn- multiple-ref-attrib [attrib old-values new-values]
-  (handle-deleted-multiple-refs-attrib old-values new-values)
+(defn- multiple-ref-attrib [entity attrib old-values new-values]  
+  (handle-deleted-multiple-refs-attrib entity attrib old-values new-values)
   (let [db-ids (doall (keep :db/id (map process-map new-values)))]
     (cond
      (empty? db-ids) nil
@@ -45,8 +47,8 @@
     (cond
      (and (= old-value value) (not= attrib :db/id)) nil
      (schema/is-enum? attrib) [attrib value]
-     (schema/is-single-ref-attrib? attrib) (single-ref-attrib attrib old-value value)
-     (schema/is-multiple-ref-attrib? attrib) (multiple-ref-attrib attrib old-value value)
+     (schema/is-single-ref-attrib? attrib) (single-ref-attrib old-map attrib old-value value)
+     (schema/is-multiple-ref-attrib? attrib) (multiple-ref-attrib old-map attrib old-value value)
      :else [attrib value])))
 
 (defn- process-map [a-map]
