@@ -14,46 +14,50 @@
 
 ;; declaration
 
-(defn fact-schema [attribute enum-type value-type cardinality fulltext? doc no-history?]
+(defn fact-schema [attribute enum-type value-type cardinality fulltext? doc uniqueness index? component? no-history?]
   (let [schema {:db/id (db/tempid :db.part/db)
                 :db/ident attribute
                 :db/valueType value-type
                 :db/cardinality cardinality
-                :db/fulltext fulltext?
+                :db/fulltext fulltext? ;; defaults to false
                 :db/doc doc
-                :db.install/_attribute :db.part/db
-                :db/noHistory no-history?}]
-    ;(swap! SCHEMA-MAP assoc attribute schema)
+                :db/index index? ;;defaults to false
+                :db/isComponent (and component? (= value-type :db.type/ref)) ;;defaults to nil
+                :db/noHistory no-history? ;; defaults to false                
+                :db.install/_attribute :db.part/db}
+        schema (if uniqueness
+                 (assoc schema :db/unique uniqueness) ;; defaults to nil
+                 schema)]
     (add-to-schema-map attribute schema)
     (add-to-schema-type attribute enum-type)
     schema))
 
-(defn string-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc no-history?))
+(defn string-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn strings-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute false :db.type/string :db.cardinality/many fulltext? doc no-history?))
+(defn strings-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute false :db.type/string :db.cardinality/many fulltext? doc uniqueness index? component? no-history?))
 
-(defn long-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc no-history?))
+(defn long-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn boolean-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute false :db.type/boolean :db.cardinality/one fulltext? doc no-history?))
+(defn boolean-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute false :db.type/boolean :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn instant-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc no-history?))
+(defn instant-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn uuid-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc no-history?))
+(defn uuid-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn refs-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute false :db.type/ref :db.cardinality/many fulltext? doc no-history?))
+(defn refs-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute false :db.type/ref :db.cardinality/many fulltext? doc uniqueness index? component? no-history?))
 
-(defn ref-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute false :db.type/ref :db.cardinality/one fulltext? doc no-history?))
+(defn ref-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute false :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn enum-fact-schema [attribute fulltext? doc no-history?]
-  (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc no-history?))
+(defn enum-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+  (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
 (defn enum-value-schema [value]
   [:db/add (db/tempid :db.part/user) :db/ident value])
