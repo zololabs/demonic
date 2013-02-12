@@ -2,7 +2,7 @@
   :description "Datomic helper for testing and batch commits"
 
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [com.datomic/datomic-free "0.8.3767"]
+                 [com.datomic/datomic-free "0.8.3789"]
 
                  [org.clojure/tools.logging "0.2.4"]
                  [slingshot "0.10.2"]                 
@@ -13,9 +13,10 @@
             [lein-pprint "1.1.1"]
             [lein-clojars "0.9.1"]]
 
-  :dev-dependencies [[clj-stacktrace "0.2.4"]
-                     [swank-clojure "1.3.3"]]
-  
+  :profiles {:dev
+             {:dependencies [[clj-stacktrace "0.2.4"]
+                             [swank-clojure "1.3.3"]]}}
+
   :min-lein-version "1.7.0"
 
   :warn-on-reflection false
