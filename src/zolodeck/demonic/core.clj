@@ -36,20 +36,22 @@
     (when (:db/id e)
       (-> e entity->loadable))))
 
-(defn load-and-transform-with [eid transform]
-  (-> eid load-entity transform))
-
 (defn insert [a-map]
   (when a-map
     (let [with-attribs (assoc-demonic-attributes a-map)]
       (-> with-attribs process-graph run-transaction)
       (with-attribs (guid-key with-attribs)))))
 
-(defn insert-and-transform-with [a-map transform]
-  (when a-map
-    (let [p (process-graph a-map)]      
-      (run-transaction p)
-      (transform p))))
+(defn reload-by-guid [guid-key guid]
+  (when guid
+    (-> (run-query '[:find ?e :in $ ?gk ?guid :where [?e ?gk ?guid]] guid-key guid)
+        ffirst
+        load-entity)))
+
+(defn insert-and-reload [a-map]
+  (->> a-map
+       insert
+       (reload-by-guid (guid-key a-map))))
 
 (defn append-multiple [entity attrib value-entities]
   (let [with-attribs (map assoc-demonic-attributes value-entities)
