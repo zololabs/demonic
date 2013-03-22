@@ -41,8 +41,9 @@
 
 (defn insert [a-map]
   (when a-map
-    (-> a-map process-graph run-transaction))
-  a-map)
+    (let [with-attribs (assoc-demonic-attributes a-map)]
+      (-> with-attribs process-graph run-transaction)
+      (with-attribs (guid-key with-attribs)))))
 
 (defn insert-and-transform-with [a-map transform]
   (when a-map

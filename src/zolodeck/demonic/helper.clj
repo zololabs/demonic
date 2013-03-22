@@ -66,7 +66,8 @@
 
 (defn run-transaction [tx-data]
   (swap! TX-DATA conj tx-data)
-  (swap! DATOMIC-DB speculative-transact tx-data))
+  (swap! DATOMIC-DB speculative-transact tx-data)
+  nil)
 
 (defn commit-pending-transactions []
   (when-not DATOMIC-TEST
@@ -94,7 +95,7 @@
 (defn- non-db-keys [a-map]
   (remove #(= :db/id %) (keys a-map)))
 
-(defn- guid-key [a-map]
+(defn guid-key [a-map]
   (-> a-map non-db-keys first .getNamespace (str "/guid") keyword))
 
 (defn assoc-demonic-attributes [entity-or-map]
