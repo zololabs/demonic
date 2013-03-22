@@ -40,23 +40,23 @@
                  :user/last-name "Jagadeesan"})
 
 (def TEST-SCHEMA-TX [
-   (uuid-fact-schema :user/guid false "A GUID for the user" false)
-   (string-fact-schema :user/first-name true "A user's first name" false) 
-   (string-fact-schema :user/last-name true "A user's last name" false) 
-   (string-fact-schema :user/gender false "A user's gender" false) 
-   (string-fact-schema :user/fb-id false "A user's Facebook ID" false) 
-   (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token" false)
-   (string-fact-schema :user/fb-email false "A user's Facebook email" false) 
-   (string-fact-schema :user/fb-link false "A user's Facebook link" false) 
-   (string-fact-schema :user/fb-username false "A user's Facebook username" false)
+   (uuid-fact-schema :user/guid false "A GUID for the user" :db.unique/identity true true false)
+   (string-fact-schema :user/first-name true "A user's first name" false false true false) 
+   (string-fact-schema :user/last-name true "A user's last name" false true true false) 
+   (string-fact-schema :user/gender false "A user's gender" false false true false) 
+   (string-fact-schema :user/fb-id false "A user's Facebook ID" false true true false) 
+   (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token" :db.unique/value false true false)
+   (string-fact-schema :user/fb-email false "A user's Facebook email" :db.unique/value false true false) 
+   (string-fact-schema :user/fb-link false "A user's Facebook link" :db.unique/value false true false) 
+   (string-fact-schema :user/fb-username false "A user's Facebook username" :db.unique/value false true false)
    
-   (string-fact-schema :friend/first-name true "Friend's first name" false)
-   (string-fact-schema :friend/last-name true "Friend's first name" false)
+   (string-fact-schema :friend/first-name true "Friend's first name" false false true false)
+   (string-fact-schema :friend/last-name true "Friend's first name" false false true false)
    
-   (ref-fact-schema :user/wife false "A user's wife" false)
-   (refs-fact-schema :user/friends false "A users's friends" false)
+   (ref-fact-schema :user/wife false "A user's wife" false false false false)
+   (refs-fact-schema :user/friends false "A users's friends" false false false false)
 
-   (enum-fact-schema :user/callsign false "A user's call-sign" false)
+   (enum-fact-schema :user/callsign false "A user's call-sign" false false true false)
    (enum-value-schema :callsign/eagle)
    (enum-value-schema :callsign/hawk)])
 
