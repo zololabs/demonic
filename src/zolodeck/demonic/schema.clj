@@ -1,4 +1,5 @@
 (ns zolodeck.demonic.schema
+  (:require [zolodeck.utils.maps :as maps])
   (:use [datomic.api :only [tempid] :as db]
         zolodeck.utils.debug))
 
@@ -27,7 +28,10 @@
                 :db.install/_attribute :db.part/db}
         schema (if uniqueness
                  (assoc schema :db/unique uniqueness) ;; defaults to nil
-                 schema)]
+                 schema)
+;;        schema (maps/remove-nil-vals schema)
+        ]
+    
     (add-to-schema-map attribute schema)
     (add-to-schema-type attribute enum-type)
     schema))

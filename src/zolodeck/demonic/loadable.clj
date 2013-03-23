@@ -29,6 +29,8 @@
     (and (is-loadable? self)
          (is-loadable? o)
          (= m (.m o))))
+  (empty [self]
+    (empty? self))
 
   clojure.lang.Counted
   (count [this]
