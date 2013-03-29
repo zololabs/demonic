@@ -58,6 +58,11 @@
         append-txn (append-ref-txn entity attrib with-attribs)]
     (run-transaction (conj with-attribs append-txn))))
 
+(defn append-multiple-and-reload [entity attrib value-entities]
+  (append-multiple entity attrib value-entities)
+  (let [gk (guid-key entity)]
+    (reload-by-guid gk (entity gk))))
+
 (defn append-single [entity attrib value-entity]
   (append-multiple entity attrib [value-entity]))
 
