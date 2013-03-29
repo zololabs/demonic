@@ -66,6 +66,9 @@
 (defn append-single [entity attrib value-entity]
   (append-multiple entity attrib [value-entity]))
 
+(defn append-single-and-reload [entity attrib value-entity]
+  (append-multiple-and-reload entity attrib [value-entity]))
+
 (defn retract
   ([entity attrib value]
      (->> (retract-attribute-txn entity attrib value)
