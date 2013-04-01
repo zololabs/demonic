@@ -1,10 +1,10 @@
 (ns zolodeck.demonic.loadable
   (:use zolodeck.demonic.helper
-        zolodeck.utils.debug
+        zolo.utils.debug
         [slingshot.slingshot :only [throw+ try+]])
   (:require [datomic.api :as db]
             [zolodeck.demonic.schema :as schema]
-            [zolodeck.utils.clojure :as zolo-clj]))
+            [zolo.utils.clojure :as zolo-clj]))
 
 (declare get-value seq-entry is-loadable?)
 

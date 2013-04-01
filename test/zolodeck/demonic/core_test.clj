@@ -5,8 +5,8 @@
         [zolodeck.demonic.refs :only [process-graph]]        
         [zolodeck.demonic.test-schema]
         [zolodeck.demonic.test]
-        [zolodeck.utils.debug]
-        [zolodeck.utils.test]))
+        [zolo.utils.debug]
+        [zolo.utils.test]))
 
 (init-db "datomic:mem://demonic-test" TEST-SCHEMA-TX)
 

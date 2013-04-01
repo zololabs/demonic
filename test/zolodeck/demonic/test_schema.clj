@@ -1,5 +1,5 @@
 (ns zolodeck.demonic.test-schema
-  (:use [zolodeck.utils.debug]
+  (:use [zolo.utils.debug]
         [zolodeck.demonic.schema]
         [zolodeck.demonic.core :only [load-entity] :as demonic]))
 

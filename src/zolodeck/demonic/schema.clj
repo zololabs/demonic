@@ -1,7 +1,7 @@
 (ns zolodeck.demonic.schema
-  (:require [zolodeck.utils.maps :as maps])
+  (:require [zolo.utils.maps :as maps])
   (:use [datomic.api :only [tempid] :as db]
-        zolodeck.utils.debug))
+        zolo.utils.debug))
 
 (def SCHEMA-MAP (atom {}))
 

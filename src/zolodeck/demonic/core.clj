@@ -1,10 +1,10 @@
 (ns zolodeck.demonic.core
   (:use [datomic.api :only [q db tx-report-queue history as-of entity] :as db]
-        [zolodeck.utils.clojure :only [defrunonce]]
+        [zolo.utils.clojure :only [defrunonce]]
         zolodeck.demonic.loadable
         zolodeck.demonic.helper        
         zolodeck.demonic.refs
-        zolodeck.utils.debug))
+        zolo.utils.debug))
 
 (defmacro in-demarcation [& body]
   `(run-in-demarcation (fn [] ~@body)))

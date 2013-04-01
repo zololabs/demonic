@@ -1,10 +1,10 @@
 (ns zolodeck.demonic.helper
   (:use [datomic.api :only [q db tempid squuid] :as db]
         [zolodeck.demonic.schema :as schema]
-        [zolodeck.utils.clojure :only [defrunonce random-guid diff]]
-        [zolodeck.utils.maps :only [select-keys-if] :as maps]
-        [zolodeck.utils.debug]
-        [zolodeck.utils.clojure])
+        [zolo.utils.clojure :only [defrunonce random-guid diff]]
+        [zolo.utils.maps :only [select-keys-if] :as maps]
+        [zolo.utils.debug]
+        [zolo.utils.clojure])
   (:require [clojure.tools.logging :as logger]))
 
 (def CONN)

@@ -2,9 +2,9 @@
   "Takes a graph and converts to a series of datomic operations"
   (:use zolodeck.demonic.loadable
         zolodeck.demonic.helper
-        zolodeck.utils.debug
-        zolodeck.utils.clojure
-        [zolodeck.utils.maps :only [select-keys-if] :as maps]
+        zolo.utils.debug
+        zolo.utils.clojure
+        [zolo.utils.maps :only [select-keys-if] :as maps]
         [zolodeck.demonic.schema :as schema]))
 
 (declare process-map)

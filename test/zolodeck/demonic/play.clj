@@ -1,7 +1,7 @@
 (ns zolodeck.demonic.play
   (:use [zolodeck.demonic.test-schema]
         [zolodeck.demonic.test]
-        [zolodeck.utils.debug]
+        [zolo.utils.debug]
         clojure.pprint)
   (:require [zolodeck.demonic.core :as demonic]
             [zolodeck.demonic.helper :as devil]))
