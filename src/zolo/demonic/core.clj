@@ -1,9 +1,9 @@
-(ns zolodeck.demonic.core
+(ns zolo.demonic.core
   (:use [datomic.api :only [q db tx-report-queue history as-of entity] :as db]
         [zolo.utils.clojure :only [defrunonce]]
-        zolodeck.demonic.loadable
-        zolodeck.demonic.helper        
-        zolodeck.demonic.refs
+        zolo.demonic.loadable
+        zolo.demonic.helper        
+        zolo.demonic.refs
         zolo.utils.debug))
 
 (defmacro in-demarcation [& body]

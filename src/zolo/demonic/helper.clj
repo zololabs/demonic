@@ -1,6 +1,6 @@
-(ns zolodeck.demonic.helper
+(ns zolo.demonic.helper
   (:use [datomic.api :only [q db tempid squuid] :as db]
-        [zolodeck.demonic.schema :as schema]
+        [zolo.demonic.schema :as schema]
         [zolo.utils.clojure :only [defrunonce random-guid diff]]
         [zolo.utils.maps :only [select-keys-if] :as maps]
         [zolo.utils.debug]

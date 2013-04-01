@@ -1,4 +1,4 @@
-(ns zolodeck.demonic.schema
+(ns zolo.demonic.schema
   (:require [zolo.utils.maps :as maps])
   (:use [datomic.api :only [tempid] :as db]
         zolo.utils.debug))

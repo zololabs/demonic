@@ -1,8 +1,8 @@
-(ns zolodeck.demonic.test
+(ns zolo.demonic.test
   (:require [datomic.api :as db])
   (:use [clojure.test :only [run-tests deftest is are testing]]
-        [zolodeck.demonic.core :only [in-demarcation]]
-        [zolodeck.demonic.helper :only [DATOMIC-TEST start-it-up-]]))
+        [zolo.demonic.core :only [in-demarcation]]
+        [zolo.demonic.helper :only [DATOMIC-TEST start-it-up-]]))
 
 (defmacro with-demonic-demarcation [in-test? body]
   `(binding [DATOMIC-TEST ~in-test?]

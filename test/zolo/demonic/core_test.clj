@@ -1,10 +1,10 @@
-(ns zolodeck.demonic.core-test
+(ns zolo.demonic.core-test
   (:use [clojure.test :only [run-tests deftest is are testing]]
-        [zolodeck.demonic.core :only [init-db in-demarcation run-query delete] :as demonic]
-        [zolodeck.demonic.helper :only [DATOMIC-TEST]]
-        [zolodeck.demonic.refs :only [process-graph]]        
-        [zolodeck.demonic.test-schema]
-        [zolodeck.demonic.test]
+        [zolo.demonic.core :only [init-db in-demarcation run-query delete] :as demonic]
+        [zolo.demonic.helper :only [DATOMIC-TEST]]
+        [zolo.demonic.refs :only [process-graph]]        
+        [zolo.demonic.test-schema]
+        [zolo.demonic.test]
         [zolo.utils.debug]
         [zolo.utils.test]))
 
@@ -397,6 +397,6 @@
              (assoc (select-keys siva (keys SIVA-DB)) :a 1)))
       (is (= (merge HARINI-DB {:a 1})
              (merge (select-keys (:user/wife siva) (keys HARINI-DB)) {:a 1})))
-      (is (= zolodeck.demonic.loadable.Loadable (class (:user/wife siva))))
-      (is (= (list zolodeck.demonic.loadable.Loadable zolodeck.demonic.loadable.Loadable) (map class (:user/friends siva))))
-      (is (= (list zolodeck.demonic.loadable.Loadable zolodeck.demonic.loadable.Loadable) (map class (siva :user/friends)))))))
+      (is (= zolo.demonic.loadable.Loadable (class (:user/wife siva))))
+      (is (= (list zolo.demonic.loadable.Loadable zolo.demonic.loadable.Loadable) (map class (:user/friends siva))))
+      (is (= (list zolo.demonic.loadable.Loadable zolo.demonic.loadable.Loadable) (map class (siva :user/friends)))))))

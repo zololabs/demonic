@@ -1,10 +1,10 @@
-(ns zolodeck.demonic.play
-  (:use [zolodeck.demonic.test-schema]
-        [zolodeck.demonic.test]
+(ns zolo.demonic.play
+  (:use [zolo.demonic.test-schema]
+        [zolo.demonic.test]
         [zolo.utils.debug]
         clojure.pprint)
-  (:require [zolodeck.demonic.core :as demonic]
-            [zolodeck.demonic.helper :as devil]))
+  (:require [zolo.demonic.core :as demonic]
+            [zolo.demonic.helper :as devil]))
 
 (defn init-db []
   (demonic/init-db "datomic:mem://demonic-test" TEST-SCHEMA-TX))

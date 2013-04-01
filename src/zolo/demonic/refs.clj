@@ -1,11 +1,11 @@
-(ns zolodeck.demonic.refs
+(ns zolo.demonic.refs
   "Takes a graph and converts to a series of datomic operations"
-  (:use zolodeck.demonic.loadable
-        zolodeck.demonic.helper
+  (:use zolo.demonic.loadable
+        zolo.demonic.helper
         zolo.utils.debug
         zolo.utils.clojure
         [zolo.utils.maps :only [select-keys-if] :as maps]
-        [zolodeck.demonic.schema :as schema]))
+        [zolo.demonic.schema :as schema]))
 
 (declare process-map)
 
