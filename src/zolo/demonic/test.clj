@@ -4,17 +4,17 @@
         [zolo.demonic.core :only [in-demarcation]]
         [zolo.demonic.helper :only [DATOMIC-TEST start-it-up-]]))
 
-(defmacro with-demonic-demarcation [in-test? body]
+(defmacro with-demonic-demarcation [in-test? & body]
   `(binding [DATOMIC-TEST ~in-test?]
      (in-demarcation ~@body)))
 
 (defmacro demonictest [test-name & body]
   `(deftest ~test-name
-     (with-demonic-demarcation true ~body)))
+     (with-demonic-demarcation true ~@body)))
 
 (defmacro demonic-testing [message & body]
   `(testing ~message
-     (with-demonic-demarcation true ~body)))
+     (with-demonic-demarcation true ~@body)))
 
 (defn re-initialize-db [datomic-db-name datomic-schema]
   (db/delete-database datomic-db-name)
