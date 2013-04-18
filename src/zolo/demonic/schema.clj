@@ -22,14 +22,14 @@
                 :db/cardinality cardinality
                 :db/fulltext fulltext? ;; defaults to false
                 :db/doc doc
-                :db/index index? ;;defaults to false
+                :db/index (if index? index?) ;;defaults to false
                 :db/isComponent (and component? (= value-type :db.type/ref)) ;;defaults to nil
                 :db/noHistory no-history? ;; defaults to false                
                 :db.install/_attribute :db.part/db}
         schema (if uniqueness
                  (assoc schema :db/unique uniqueness) ;; defaults to nil
-                 schema)
-;;        schema (maps/remove-nil-vals schema)
+                 schema)        
+        schema (maps/remove-nil-vals schema)
         ]
     
     (add-to-schema-map attribute schema)
