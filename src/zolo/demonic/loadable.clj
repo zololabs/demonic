@@ -38,13 +38,21 @@
   
   clojure.lang.ILookup
   (valAt [this k]
-    (get-value m k))
+    (print-vals "LOOK:" (get-value m k)))
   (valAt [this k v]
     (get-value m k v))
   
   clojure.lang.Seqable
   ;(seq [this] (map seq-entry m))
   (seq [this] (seq m))
+
+  clojure.lang.IObj
+  (withMeta [this o]
+    (with-meta m o))
+
+  clojure.lang.IMeta
+  (meta [this]
+    (meta m))
   
   clojure.lang.IFn
   (invoke [this] this)
