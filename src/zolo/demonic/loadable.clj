@@ -38,7 +38,7 @@
   
   clojure.lang.ILookup
   (valAt [this k]
-    (print-vals "LOOK:" (get-value m k)))
+    (get-value m k))
   (valAt [this k v]
     (get-value m k v))
   
