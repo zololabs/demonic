@@ -262,6 +262,16 @@
       (let [deepthi-reloaded (-> siva-reloaded :user/friends second)]
         (demonic/insert (assoc deepthi-reloaded :user/gender "female"))))))
 
+(deftest test-user-has-a-friends-who-have-friends-appending
+  (cleanup-siva)
+  (demonic-testing "can re-persist siva, his wife, and his friends"
+    (let [deepthi-graph (assoc DEEPTHI-DB :user/friends [ADI-DB ALEKHYA-DB])
+          siva-reloaded (demonic/insert-and-reload SIVA-DB)]
+      (demonic/append-multiple siva-reloaded :user/friends [AMIT-DB deepthi-graph])      
+      (let [siva-reloaded (load-siva-from-db)]
+        (is (not (nil? (:db/id siva-reloaded))))
+        (is (= 5 (number-of-users-in-datomic)))))))
+
 (deftest test-user-has-a-wife-who-has-friends
   (cleanup-siva)
   (demonic-testing "can persist siva, wife with a friend, and friend with a friend"

@@ -1,6 +1,6 @@
 (ns zolo.demonic.core
   (:use [datomic.api :only [q db tx-report-queue history as-of entity] :as db]
-        [zolo.utils.clojure :only [defrunonce]]
+        [zolo.utils.clojure]
         zolo.demonic.loadable
         zolo.demonic.helper        
         zolo.demonic.refs
@@ -54,9 +54,9 @@
        (reload-by-guid (guid-key a-map))))
 
 (defn append-multiple [entity attrib value-entities]
-  (let [with-attribs (map assoc-demonic-attributes value-entities)
+  (let [with-attribs (domap insert-and-reload value-entities)
         append-txn (append-ref-txn entity attrib with-attribs)]
-    (run-transaction (conj with-attribs append-txn))))
+    (run-transaction [append-txn])))
 
 (defn append-multiple-and-reload [entity attrib value-entities]
   (append-multiple entity attrib value-entities)
