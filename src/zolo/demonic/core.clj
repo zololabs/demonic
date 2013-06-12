@@ -54,9 +54,9 @@
        (reload-by-guid (guid-key a-map))))
 
 (defn append-multiple [entity attrib value-entities]
-  (let [with-attribs (domap insert-and-reload value-entities)
+  (let [with-attribs (map assoc-demonic-attributes value-entities)
         append-txn (append-ref-txn entity attrib with-attribs)]
-    (run-transaction [append-txn])))
+    (run-transaction (conj with-attribs append-txn))))
 
 (defn append-multiple-and-reload [entity attrib value-entities]
   (append-multiple entity attrib value-entities)
