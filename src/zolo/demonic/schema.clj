@@ -1,7 +1,8 @@
 (ns zolo.demonic.schema
   (:require [zolo.utils.maps :as maps])
   (:use [datomic.api :only [tempid] :as db]
-        zolo.utils.debug))
+        zolo.utils.debug
+        zolo.utils.clojure))
 
 (def SCHEMA-MAP (atom {}))
 
@@ -36,31 +37,34 @@
     (add-to-schema-type attribute enum-type)
     schema))
 
-(defn string-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+;; (defn string-fact-schema [attribute fulltext? doc uniqueness index? no-history?]
+;;   (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk string-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn strings-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+(defnk strings-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/string :db.cardinality/many fulltext? doc uniqueness index? component? no-history?))
 
-(defn long-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+(defnk long-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn boolean-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+(defnk boolean-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/boolean :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn instant-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+(defnk instant-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn uuid-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
-  (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
+(defnk uuid-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false
+] (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn refs-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+(defnk refs-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/ref :db.cardinality/many fulltext? doc uniqueness index? component? no-history?))
 
-(defn ref-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+(defnk ref-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defn enum-fact-schema [attribute fulltext? doc uniqueness index? component? no-history?]
+(defnk enum-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? true :no-history? false]
   (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
 (defn enum-value-schema [value]

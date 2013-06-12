@@ -40,25 +40,27 @@
                  :user/last-name "Jagadeesan"})
 
 (def TEST-SCHEMA-TX [
-   (uuid-fact-schema :user/guid false "A GUID for the user" :db.unique/identity true true false)
-   (string-fact-schema :user/first-name true "A user's first name" false false true false) 
-   (string-fact-schema :user/last-name true "A user's last name" false true true false) 
-   (string-fact-schema :user/gender false "A user's gender" false false true false) 
-   (string-fact-schema :user/fb-id false "A user's Facebook ID" false true true false) 
-   (string-fact-schema :user/fb-auth-token false "A user's Facebook auth token" :db.unique/value false true false)
-   (string-fact-schema :user/fb-email false "A user's Facebook email" :db.unique/value false true false) 
-   (string-fact-schema :user/fb-link false "A user's Facebook link" :db.unique/value false true false) 
-   (string-fact-schema :user/fb-username false "A user's Facebook username" :db.unique/value false true false)
-   
-   (string-fact-schema :friend/first-name true "Friend's first name" false false true false)
-   (string-fact-schema :friend/last-name true "Friend's first name" false false true false)
-   
-   (ref-fact-schema :user/wife false "A user's wife" false false false false)
-   (refs-fact-schema :user/friends false "A users's friends" false false false false)
+   (uuid-fact-schema :user/guid "A GUID for the user" :uniqueness :db.unique/identity :index? true)
 
-   (enum-fact-schema :user/callsign false "A user's call-sign" false false true false)
-   (enum-value-schema :callsign/eagle)
-   (enum-value-schema :callsign/hawk)])
+   (string-fact-schema :user/first-name "A user's first name" :fulltext? true :index? true) 
+   (string-fact-schema :user/last-name  "A user's last name" :fulltext? true  :index? true) 
+   (string-fact-schema :user/gender "A user's gender")   
+   (string-fact-schema :user/fb-id "A user's Facebook ID") 
+   (string-fact-schema :user/fb-auth-token "A user's Facebook auth token" :uniqueness :db.unique/value)
+   (string-fact-schema :user/fb-email "A user's Facebook email" :uniqueness :db.unique/value) 
+   (string-fact-schema :user/fb-link "A user's Facebook link" :uniqueness :db.unique/value) 
+   (string-fact-schema :user/fb-username "A user's Facebook username" :uniqueness :db.unique/value)
+   
+   (string-fact-schema :friend/first-name "Friend's first name")
+   (string-fact-schema :friend/last-name "Friend's first name")
+   
+  (ref-fact-schema :user/wife "A user's wife")
+  (refs-fact-schema :user/friends "A users's friends")
+
+  (enum-fact-schema :user/callsign "A user's call-sign")
+  (enum-value-schema :callsign/eagle)
+  (enum-value-schema :callsign/hawk)
+   ])
 
 (defn find-by-fb-id [fb-id]
   (when fb-id
