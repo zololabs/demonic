@@ -64,7 +64,7 @@
 (defnk ref-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defnk enum-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? true :no-history? false]
+(defnk enum-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
 (defn enum-value-schema [value]
