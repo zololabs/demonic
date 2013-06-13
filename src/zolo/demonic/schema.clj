@@ -37,26 +37,77 @@
     (add-to-schema-type attribute enum-type)
     schema))
 
-;; (defn string-fact-schema [attribute fulltext? doc uniqueness index? no-history?]
-;;   (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+(defnk string-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
 
-(defnk string-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
-  (fact-schema attribute false :db.type/string :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
+(defnk strings-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/string :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
 
-(defnk strings-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
-  (fact-schema attribute false :db.type/string :db.cardinality/many fulltext? doc uniqueness index? component? no-history?))
 
-(defnk long-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
-  (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defnk boolean-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
-  (fact-schema attribute false :db.type/boolean :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
+(defnk long-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/long :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
 
-(defnk instant-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
-  (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
+(defnk longs-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/long :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
 
-(defnk uuid-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false
-] (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
+
+
+(defnk float-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/float :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk floats-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/float :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
+
+
+
+(defnk double-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/double :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk doubles-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/double :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
+
+
+
+(defnk bigdec-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/bigdec :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk bigdecs-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/bigdec :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
+
+
+
+(defnk uri-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/uri :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk uris-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/uri :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
+
+
+
+(defnk boolean-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/boolean :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk booleans-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/boolean :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
+
+
+
+(defnk instant-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/instant :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk instants-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/instant :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
+
+
+
+(defnk uuid-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/uuid :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk uuids-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute false :db.type/uuid :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
+
+
 
 (defnk refs-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/ref :db.cardinality/many fulltext? doc uniqueness index? component? no-history?))
@@ -64,8 +115,15 @@
 (defnk ref-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
   (fact-schema attribute false :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
 
-(defnk enum-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :component? false :no-history? false]
-  (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? component? no-history?))
+
+
+(defnk enum-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute true :db.type/ref :db.cardinality/one fulltext? doc uniqueness index? false no-history?))
+
+(defnk enums-fact-schema [attribute doc :fulltext? false :uniqueness false :index? false :no-history? false]
+  (fact-schema attribute true :db.type/ref :db.cardinality/many fulltext? doc uniqueness index? false no-history?))
+
+
 
 (defn enum-value-schema [value]
   [:db/add (db/tempid :db.part/user) :db/ident value])
