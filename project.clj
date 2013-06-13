@@ -2,7 +2,7 @@
   :description "Datomic helper for unit-testing, batch commits, and more"
 
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [com.datomic/datomic-free "0.8.3789"]
+                 [com.datomic/datomic-free "0.8.4007"]
 
                  [org.clojure/tools.logging "0.2.4"]
                  [slingshot "0.10.2"]                 
