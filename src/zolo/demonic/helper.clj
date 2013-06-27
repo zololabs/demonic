@@ -96,10 +96,12 @@
   (remove #(= :db/id %) (keys a-map)))
 
 (defn entity-name [a-map]
-  (-> a-map non-db-keys first .getNamespace))
+  (if a-map
+    (-> a-map non-db-keys first .getNamespace)))
 
 (defn guid-key [a-map]
-  (-> a-map entity-name (str "/guid") keyword))
+  (if a-map
+    (-> a-map entity-name (str "/guid") keyword)))
 
 (defn assoc-demonic-attributes [entity-or-map]
   (when entity-or-map
